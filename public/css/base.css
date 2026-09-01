@@ -1,0 +1,270 @@
+/* ============================================================
+   ARTA-C — base tokens & reset
+   Two themes share this file: [data-theme="neu"] and [data-theme="glass"]
+   Palette is anchored on cyan + white.
+   ============================================================ */
+
+:root {
+  /* cyan ramp */
+  --cy-50:  #ecfeff;
+  --cy-100: #cffafe;
+  --cy-200: #a5f3fc;
+  --cy-300: #67e8f9;
+  --cy-400: #22d3ee;
+  --cy-500: #06b6d4;
+  --cy-600: #0891b2;
+  --cy-700: #0e7490;
+  --cy-800: #155e75;
+  --cy-900: #164e63;
+
+  --white: #ffffff;
+
+  /* semantic */
+  --ok:    #10b981;
+  --warn:  #f59e0b;
+  --dang:  #ef4444;
+  --info:  var(--cy-500);
+
+  /* spacing / geometry */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-pill: 999px;
+
+  --ff: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ff-num: "JetBrains Mono", ui-monospace, "Consolas", monospace;
+
+  --t-fast: 140ms cubic-bezier(.4, 0, .2, 1);
+  --t-med: 260ms cubic-bezier(.4, 0, .2, 1);
+
+  --sidebar-w: 260px;
+  --header-h: 68px;
+}
+
+/* ---------- reset ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--ff);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background var(--t-med), color var(--t-med);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 { margin: 0; font-weight: 700; line-height: 1.25; letter-spacing: -.02em; }
+h1 { font-size: clamp(1.9rem, 4vw, 3rem); }
+h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); }
+h3 { font-size: 1.15rem; }
+h4 { font-size: 1rem; }
+p { margin: 0 0 var(--sp-3); }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img, video, canvas { max-width: 100%; display: block; }
+ul, ol { margin: 0; padding-left: 1.2em; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* screen-reader only */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: absolute; left: var(--sp-4); top: -60px;
+  z-index: 200; padding: var(--sp-2) var(--sp-4);
+  background: var(--cy-700); color: #fff; border-radius: var(--r-sm);
+  transition: top var(--t-fast);
+}
+.skip-link:focus { top: var(--sp-4); }
+
+/* ============================================================
+   THEME 1 — NEUMORPHISM
+   Soft extruded surfaces on a single tinted-white plane.
+   ============================================================ */
+[data-theme="neu"] {
+  --bg: #e8f3f6;
+  --bg-2: #e8f3f6;
+  --surface: #e8f3f6;
+  --surface-2: #eef7f9;
+  --surface-ink: #e8f3f6;
+
+  --fg: #1d3c46;
+  --fg-soft: #5b7d88;
+  --fg-mute: #86a2ab;
+
+  --accent: var(--cy-500);
+  --accent-ink: var(--cy-700);
+  --accent-soft: #d3edf3;
+
+  --line: rgba(23, 78, 92, .09);
+  --focus: var(--cy-600);
+
+  /* neumorphic light/dark shadow pair */
+  --nl: #ffffff;
+  --nd: #bfd7de;
+
+  --sh-out: 7px 7px 16px var(--nd), -7px -7px 16px var(--nl);
+  --sh-out-sm: 4px 4px 9px var(--nd), -4px -4px 9px var(--nl);
+  --sh-out-lg: 12px 12px 28px var(--nd), -12px -12px 28px var(--nl);
+  --sh-in: inset 5px 5px 11px var(--nd), inset -5px -5px 11px var(--nl);
+  --sh-in-sm: inset 3px 3px 6px var(--nd), inset -3px -3px 6px var(--nl);
+
+  --card-bd: 0 solid transparent;
+  --blur: none;
+}
+
+/* ============================================================
+   THEME 2 — GLASSMORPHISM
+   Frosted translucent panes over a deep cyan aurora.
+   ============================================================ */
+[data-theme="glass"] {
+  --bg: #04212b;
+  --bg-2: #062f3d;
+  --surface: rgba(255, 255, 255, .1);
+  --surface-2: rgba(255, 255, 255, .16);
+  --surface-ink: rgba(4, 33, 43, .72);
+
+  --fg: #eafbff;
+  --fg-soft: #a9d7e3;
+  --fg-mute: #7fb3c2;
+
+  --accent: var(--cy-300);
+  --accent-ink: var(--cy-200);
+  --accent-soft: rgba(103, 232, 249, .16);
+
+  --line: rgba(255, 255, 255, .18);
+  --focus: var(--cy-300);
+
+  --sh-out: 0 10px 30px rgba(2, 18, 24, .38);
+  --sh-out-sm: 0 6px 16px rgba(2, 18, 24, .3);
+  --sh-out-lg: 0 22px 60px rgba(2, 18, 24, .45);
+  --sh-in: inset 0 1px 0 rgba(255, 255, 255, .22);
+  --sh-in-sm: inset 0 1px 0 rgba(255, 255, 255, .16);
+
+  --card-bd: 1px solid var(--line);
+  --blur: saturate(150%) blur(18px);
+}
+
+/* aurora backdrop, only rendered for the glass theme */
+.aurora { display: none; }
+[data-theme="glass"] .aurora {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background:
+    radial-gradient(1100px 620px at 12% -10%, #0e7490 0%, transparent 60%),
+    radial-gradient(900px 560px at 92% 8%, #155e75 0%, transparent 62%),
+    linear-gradient(160deg, #04212b 0%, #062f3d 55%, #04212b 100%);
+}
+[data-theme="glass"] .aurora span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: .5;
+  animation: drift 22s ease-in-out infinite alternate;
+}
+[data-theme="glass"] .aurora span:nth-child(1) {
+  width: 46vw; height: 46vw; left: -8vw; top: 4vh;
+  background: var(--cy-400);
+}
+[data-theme="glass"] .aurora span:nth-child(2) {
+  width: 38vw; height: 38vw; right: -6vw; top: 34vh;
+  background: var(--cy-300); animation-duration: 28s;
+}
+[data-theme="glass"] .aurora span:nth-child(3) {
+  width: 34vw; height: 34vw; left: 32vw; bottom: -12vh;
+  background: #22d3ee; opacity: .3; animation-duration: 34s;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(4vw, -6vh, 0) scale(1.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* ---------- layout helpers ---------- */
+.wrap { width: min(1180px, 100% - 2 * var(--sp-5)); margin-inline: auto; }
+.row { display: flex; gap: var(--sp-3); align-items: center; min-width: 0; }
+.row.wrapx { flex-wrap: wrap; }
+.between { justify-content: space-between; }
+.center { justify-content: center; }
+.col { display: flex; flex-direction: column; gap: var(--sp-3); }
+.grow { flex: 1 1 auto; min-width: 0; }
+.grid { display: grid; gap: var(--sp-4); }
+.g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g-auto { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+/* an asymmetric two-column split that collapses with .g-2 on small screens */
+.g-wide { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+
+.stack > * + * { margin-top: var(--sp-4); }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.mb-2 { margin-bottom: var(--sp-2); }
+.mb-4 { margin-bottom: var(--sp-4); }
+.mt-4 { margin-top: var(--sp-4); }
+.mt-5 { margin-top: var(--sp-5); }
+
+.muted { color: var(--fg-mute); }
+.soft { color: var(--fg-soft); }
+/* Small-text utilities carry a 12px floor. Pure rem values resolved
+   against the 16px root produced 11-12px text, too small to read
+   comfortably on a phone. */
+.tiny { font-size: max(12px, .8rem); }
+.small { font-size: max(13px, .88rem); }
+.big { font-size: 1.6rem; font-weight: 800; }
+.num { font-family: var(--ff-num); font-variant-numeric: tabular-nums; }
+.upper { text-transform: uppercase; letter-spacing: .08em; font-size: max(12px, .74rem); font-weight: 700; }
+.right { text-align: right; }
+.tc { text-align: center; }
+.nowrap { white-space: nowrap; }
+.hidden { display: none !important; }
+
+@media (max-width: 960px) {
+  .g-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .g-wide { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 620px) {
+  .g-2, .g-3, .g-4, .g-wide { grid-template-columns: minmax(0, 1fr); }
+  .wrap { width: min(1180px, 100% - 2 * var(--sp-4)); }
+}

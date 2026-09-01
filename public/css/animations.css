@@ -1,0 +1,231 @@
+/* ============================================================
+   ARTA-C — motion layer
+   Transform/opacity only, so nothing here triggers layout work.
+   All of it collapses to instant under prefers-reduced-motion.
+   ============================================================ */
+
+/* ---------------- keyframes ---------------- */
+@keyframes revealUp   { from { opacity: 0; transform: translate3d(0, 26px, 0); } }
+@keyframes revealLeft { from { opacity: 0; transform: translate3d(-28px, 0, 0); } }
+@keyframes revealRight{ from { opacity: 0; transform: translate3d(28px, 0, 0); } }
+@keyframes revealZoom { from { opacity: 0; transform: scale(.93); } }
+@keyframes floaty     { 50% { transform: translate3d(0, -10px, 0); } }
+@keyframes sheenMove  { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(320%) skewX(-18deg); } }
+@keyframes growBar    { from { transform: scaleY(0); } }
+@keyframes growWidth  { from { transform: scaleX(0); } }
+@keyframes spinSlow   { to { transform: rotate(360deg); } }
+@keyframes blink      { 50% { opacity: .25; } }
+@keyframes popIn      { 0% { opacity: 0; transform: scale(.7); } 60% { transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes shake      { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@keyframes gradShift  { to { background-position: 200% 50%; } }
+@keyframes markPulse  { 50% { box-shadow: var(--sh-out-sm), 0 0 0 10px rgba(34, 211, 238, 0); } }
+@keyframes dashDraw   { from { stroke-dashoffset: 400; } }
+@keyframes bootSpin   { to { transform: rotate(360deg); } }
+
+/* ---------------- scroll reveal ---------------- */
+/* Hidden state applies only once JS is confirmed alive, so a
+   script failure can never leave the page blank. */
+html.js-anim [data-reveal] {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+html.js-anim [data-reveal].in {
+  opacity: 1;
+  animation: revealUp 620ms cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+html.js-anim [data-reveal="left"].in  { animation-name: revealLeft; }
+html.js-anim [data-reveal="right"].in { animation-name: revealRight; }
+html.js-anim [data-reveal="zoom"].in  { animation-name: revealZoom; }
+
+/* instant variant used when re-rendering live data */
+html.js-anim [data-reveal].in.instant {
+  animation: none;
+  opacity: 1;
+}
+
+/* ---------------- landing accents ---------------- */
+.scroll-prog {
+  position: fixed; left: 0; top: 0; height: 3px; z-index: 100;
+  width: 100%; transform: scaleX(0); transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--cy-300), var(--cy-500), var(--cy-700));
+  pointer-events: none;
+}
+
+/* Hero device: the wrapper owns the idle float, the inner panel owns the
+   pointer tilt. Keeping them on separate elements means the two never
+   compete for the same transform property. */
+.device-float { animation: floaty 7s ease-in-out infinite; }
+.device {
+  transition: transform 300ms cubic-bezier(.22, 1, .36, 1);
+  transform-style: preserve-3d;
+}
+
+/* brand mark breathes */
+.brand .mark { animation: markPulse 3.4s ease-in-out infinite; }
+
+/* animated gradient on the wordmark accent */
+.brand .txt em {
+  background: linear-gradient(90deg, var(--cy-600), var(--cy-300), var(--cy-600));
+  background-size: 200% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradShift 5s linear infinite;
+}
+[data-theme="glass"] .brand .txt em {
+  background-image: linear-gradient(90deg, var(--cy-200), #fff, var(--cy-200));
+}
+
+/* topbar nav underline grows from the left */
+.topbar nav a { position: relative; }
+.topbar nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -5px; height: 2px;
+  border-radius: 2px; background: var(--accent);
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+.topbar nav a:hover { text-decoration: none; }
+.topbar nav a:hover::after, .topbar nav a:focus-visible::after { transform: scaleX(1); }
+
+/* sheen sweep across primary buttons on hover */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .55), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.btn-primary:hover::after { animation: sheenMove 720ms ease-out; }
+
+/* step numbers and tile icons pop when their card reveals */
+[data-reveal].in .step-n,
+[data-reveal].in .tile-icon { animation: popIn 520ms cubic-bezier(.22, 1, .36, 1) both; animation-delay: 160ms; }
+
+/* pill grid on the device mock fills in sequence */
+.device .pills i { animation: popIn 460ms cubic-bezier(.22, 1, .36, 1) both; }
+.device .pills i:nth-child(1) { animation-delay: .25s; }
+.device .pills i:nth-child(2) { animation-delay: .33s; }
+.device .pills i:nth-child(3) { animation-delay: .41s; }
+.device .pills i:nth-child(4) { animation-delay: .49s; }
+.device .pills i:nth-child(5) { animation-delay: .57s; }
+.device .pills i:nth-child(6) { animation-delay: .65s; }
+.device .pills i:nth-child(7) { animation-delay: .73s; }
+
+/* ---------------- charts ---------------- */
+.bars .b i {
+  transform-origin: 50% 100%;
+  animation: growBar 760ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.bars .b:nth-child(1) i { animation-delay: .04s; }
+.bars .b:nth-child(2) i { animation-delay: .10s; }
+.bars .b:nth-child(3) i { animation-delay: .16s; }
+.bars .b:nth-child(4) i { animation-delay: .22s; }
+.bars .b:nth-child(5) i { animation-delay: .28s; }
+.bars .b:nth-child(6) i { animation-delay: .34s; }
+.bars .b:nth-child(7) i { animation-delay: .40s; }
+
+.bar > i { transform-origin: 0 50%; animation: growWidth 820ms cubic-bezier(.22, 1, .36, 1) both; }
+
+.spark path.line { animation: dashDraw 1100ms ease-out both; stroke-dasharray: 400; }
+.spark path.area { animation: revealUp 700ms ease-out both; }
+
+/* ---------------- app shell ---------------- */
+/* staggered entrance for the cards of a freshly opened view */
+.view > * { animation: revealUp 520ms cubic-bezier(.22, 1, .36, 1) both; }
+.view > *:nth-child(1) { animation-delay: .02s; }
+.view > *:nth-child(2) { animation-delay: .08s; }
+.view > *:nth-child(3) { animation-delay: .14s; }
+.view > *:nth-child(4) { animation-delay: .20s; }
+.view > *:nth-child(5) { animation-delay: .26s; }
+.view > *:nth-child(6) { animation-delay: .32s; }
+.view.quiet > * { animation: none; }
+
+/* sidebar nav: sliding active marker + hover nudge */
+.side-nav a { position: relative; }
+.side-nav a::before {
+  content: ""; position: absolute; left: 4px; top: 50%; width: 3px; height: 0;
+  border-radius: 3px; background: var(--accent);
+  transform: translateY(-50%);
+  transition: height 240ms cubic-bezier(.22, 1, .36, 1);
+}
+.side-nav a.active::before { height: 60%; }
+.side-nav a:hover { transform: translateX(3px); }
+.side-nav a svg { transition: transform 240ms cubic-bezier(.22, 1, .36, 1); }
+.side-nav a:hover svg { transform: scale(1.14) rotate(-4deg); }
+
+.side-nav a .count { animation: popIn 420ms cubic-bezier(.22, 1, .36, 1) both; }
+
+/* the sidebar entries cascade in on first mount */
+.side-nav.fresh a { animation: revealLeft 420ms cubic-bezier(.22, 1, .36, 1) both; }
+.side-nav.fresh a:nth-child(1) { animation-delay: .03s; }
+.side-nav.fresh a:nth-child(2) { animation-delay: .07s; }
+.side-nav.fresh a:nth-child(3) { animation-delay: .11s; }
+.side-nav.fresh a:nth-child(4) { animation-delay: .15s; }
+.side-nav.fresh a:nth-child(5) { animation-delay: .19s; }
+.side-nav.fresh a:nth-child(6) { animation-delay: .23s; }
+.side-nav.fresh a:nth-child(7) { animation-delay: .27s; }
+.side-nav.fresh a:nth-child(8) { animation-delay: .31s; }
+.side-nav.fresh a:nth-child(9) { animation-delay: .35s; }
+.side-nav.fresh a:nth-child(10) { animation-delay: .39s; }
+
+/* table rows cascade */
+.view table.tbl tbody tr { animation: revealUp 380ms ease-out both; }
+.view table.tbl tbody tr:nth-child(1) { animation-delay: .02s; }
+.view table.tbl tbody tr:nth-child(2) { animation-delay: .05s; }
+.view table.tbl tbody tr:nth-child(3) { animation-delay: .08s; }
+.view table.tbl tbody tr:nth-child(4) { animation-delay: .11s; }
+.view table.tbl tbody tr:nth-child(5) { animation-delay: .14s; }
+.view table.tbl tbody tr:nth-child(6) { animation-delay: .17s; }
+.view.quiet table.tbl tbody tr { animation: none; }
+
+/* timeline dots draw in */
+.view .tl > li::before { animation: popIn 420ms cubic-bezier(.22, 1, .36, 1) both; animation-delay: .12s; }
+.view.quiet .tl > li::before { animation: none; }
+
+/* chat bubbles arrive from their own side */
+.msg { animation: revealRight 360ms cubic-bezier(.22, 1, .36, 1) both; }
+.msg.me { animation-name: revealLeft; }
+
+/* avatar hover */
+.avatar { transition: transform 240ms cubic-bezier(.22, 1, .36, 1); }
+.avatar:hover { transform: scale(1.08) rotate(-3deg); }
+
+/* card hover already lifts; add a soft glow in the glass theme */
+[data-theme="glass"] .card.hover { transition: box-shadow 300ms, transform 300ms, background 300ms; }
+[data-theme="glass"] .card.hover:hover { background: rgba(255, 255, 255, .17); }
+
+/* live recording badge */
+.rec-badge .dot { animation: blink 1s steps(2, end) infinite; }
+
+/* boot spinner */
+.boot-ring {
+  width: 34px; height: 34px; margin: 0 auto var(--sp-3);
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  animation: bootSpin 800ms linear infinite;
+}
+
+/* form validation shake */
+.shake { animation: shake 380ms ease-in-out; }
+
+/* segmented control knob slide */
+.seg button { transition: background 240ms, color 240ms, box-shadow 240ms, transform 160ms; }
+.seg button:active { transform: scale(.96); }
+
+/* switch knob overshoot */
+.switch .knob { transition: transform 260ms cubic-bezier(.34, 1.56, .64, 1); }
+
+/* modal backdrop blur fade already set; give the panel a spring */
+.modal { animation: popIn 320ms cubic-bezier(.22, 1, .36, 1); }
+
+/* badge count changes draw the eye */
+.badge.dang { animation: popIn 360ms cubic-bezier(.22, 1, .36, 1); }
+
+/* ---------------- reduced motion ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  html.js-anim [data-reveal] { opacity: 1 !important; }
+  .scroll-prog { display: none; }
+  .device-float { animation: none; }
+  .device { transform: none !important; }
+}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="neu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e8f3f6">
+<meta name="description" content="ARTA-C: smart medicine box IoT dan aplikasi PMO terintegrasi untuk pendampingan pengobatan TBC. Alarm bertingkat, Video Observed Therapy, dan laporan kepatuhan real-time.">
+<title>ARTA-C · Smart Medicine Box &amp; Aplikasi PMO TBC</title>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2306b6d4'/%3E%3Cpath d='M10 13h12v9a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M14 9h4v4h-4z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/animations.css">
+<script>
+  // apply the saved theme before first paint
+  (function () {
+    var t = localStorage.getItem("artac.theme");
+    document.documentElement.setAttribute("data-theme", t === "glass" ? "glass" : "neu");
+  })();
+</script>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+<a class="skip-link" href="#main">Lompat ke konten utama</a>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ARTA-C beranda">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/><path d="M12 14v3"/><path d="M10.5 15.5h3"/>
+        </svg>
+      </span>
+      <span class="txt">ARTA<em>-C</em></span>
+    </a>
+    <nav aria-label="Navigasi utama">
+      <a href="#cara-kerja">Cara Kerja</a>
+      <a href="#perangkat">Perangkat</a>
+      <a href="#aplikasi">Aplikasi</a>
+      <a href="#kemitraan">Kemitraan</a>
+      <a href="#catatan">Keterbatasan</a>
+    </nav>
+    <div id="themeSwitch"></div>
+    <a class="btn btn-primary btn-sm" href="app.html">Masuk Aplikasi</a>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div data-reveal="left">
+        <div class="eyebrow">
+          <span class="badge"><span class="dot ok live"></span> IoT + PMO Terintegrasi</span>
+          <span class="badge mute">Untuk pengobatan TBC</span>
+        </div>
+        <h1>Dispenser obat pintar yang memastikan pasien TBC <em>benar-benar minum obat</em>.</h1>
+        <p class="lead">
+          ARTA-C menggabungkan kotak obat portabel berbasis IoT dengan aplikasi Pengawas Minum Obat.
+          Dokter menjadwalkan dosis, dispenser membuka bungkus otomatis dan membunyikan alarm,
+          sensor mencatat respons pasien, lalu Video Observed Therapy memastikan obat benar diminum.
+        </p>
+        <div class="row wrapx mt-4">
+          <a class="btn btn-primary btn-lg" href="app.html">Buka Dasbor</a>
+          <a class="btn btn-ghost btn-lg" href="app.html?demo=1">Coba Mode Pratinjau</a>
+        </div>
+        <p class="tiny muted mt-4 mb-0">
+          Mode pratinjau memakai data contoh di peramban Anda, tanpa perlu mendaftar.
+        </p>
+        <div class="row wrapx mt-5" style="gap:var(--sp-5)">
+          <div class="stat"><span class="label">Alarm eskalasi</span>
+            <span class="value"><span data-count="5">0</span><small> tahap</small></span></div>
+          <div class="stat"><span class="label">Verifikasi</span><span class="value">VOT<small> video</small></span></div>
+          <div class="stat"><span class="label">Refill</span>
+            <span class="value"><span data-count="30">0</span><small> hari</small></span></div>
+        </div>
+      </div>
+
+      <!-- device mockup -->
+      <div class="device-float" data-reveal="right">
+      <div class="device" role="img" aria-label="Ilustrasi dispenser ARTA-C dengan layar sisa obat, suhu, dan tombol pembuka">
+        <div class="row between">
+          <span class="badge"><span class="dot ok live"></span> Terhubung</span>
+          <span class="badge mute num">26.4&deg;C</span>
+        </div>
+        <div class="screen">
+          <div class="row between">
+            <div class="stat"><span class="label">Dosis berikutnya</span><span class="value num">07:00</span></div>
+            <div class="temp-ring">63<small>butir</small></div>
+          </div>
+          <div class="bar"><i style="width:70%"></i></div>
+          <p class="tiny muted mb-0">Sisa obat cukup untuk 21 hari · sensor gerak aktif</p>
+          <div class="pills" aria-hidden="true">
+            <i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i class="full"></i><i></i><i></i>
+          </div>
+        </div>
+        <div class="btn-ring" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/>
+          </svg>
+        </div>
+        <p class="tiny muted tc mb-0">Tekan untuk membuka bungkus obat</p>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARA KERJA ============ -->
+  <section class="section" id="cara-kerja">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2>Cara kerja ARTA-C</h2>
+        <p>Mekanisme berjalan dari input dokter, dilanjutkan perangkat, dan ditutup evaluasi pengobatan berkala.</p>
+      </div>
+      <div class="grid g-auto" id="steps"></div>
+    </div>
+  </section>
+
+  <!-- ============ PERANGKAT ============ -->
+  <section class="section" id="perangkat">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2>Perangkat keras: smart medicine box</h2>
+        <p>Kotak obat portabel yang menjaga kondisi obat sekaligus merekam bukti kepatuhan.</p>
+      </div>
+      <div class="grid g-auto" id="hardware"></div>
+    </div>
+  </section>
+
+  <!-- ============ APLIKASI ============ -->
+  <section class="section" id="aplikasi">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2>Aplikasi PMO terintegrasi</h2>
+        <p>Satu aplikasi untuk tiga peran: dokter sebagai pengendali data, PMO sebagai pengawas harian, pasien sebagai pelapor kondisi.</p>
+      </div>
+      <div class="grid g-auto" id="appfeat"></div>
+    </div>
+  </section>
+
+  <!-- ============ ESKALASI ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="grid g-2" style="align-items:start" id="escWrap">
+        <div class="card" data-reveal="left">
+          <div class="card-head"><h3>Sistem alarm eskalasi</h3><span class="badge">5 tahap</span></div>
+          <ol class="tl" id="escList"></ol>
+        </div>
+        <div class="card" data-reveal="right">
+          <div class="card-head"><h3>Video Observed Therapy</h3><span class="badge ok">Bukti menelan</span></div>
+          <p class="soft">
+            Pencatatan sensor memastikan bungkus terbuka, namun tidak membuktikan obat tertelan.
+            VOT menutup celah itu: pasien merekam video pendek saat minum obat, PMO dan dokter
+            meninjau lalu menandai sesi sebagai terverifikasi.
+          </p>
+          <div class="cam-stage mb-4" aria-hidden="true">
+            <div class="ph">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/>
+              </svg>
+              <div class="small mt-4">Pratinjau sesi VOT</div>
+            </div>
+            <span class="rec-badge"><span class="dot" style="background:#fff"></span> REC 00:46</span>
+          </div>
+          <ul class="lst">
+            <li><span class="dot ok"></span><div class="grow"><b>Terverifikasi</b><div class="tiny muted">Terlihat menelan 3 tablet, air habis</div></div><span class="badge ok">VOT</span></li>
+            <li><span class="dot warn"></span><div class="grow"><b>Perlu ditinjau</b><div class="tiny muted">Menunggu konfirmasi PMO</div></div><span class="badge warn">Pending</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KEMITRAAN ============ -->
+  <section class="section" id="kemitraan">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2>Kemitraan rumah sakit dan dokter</h2>
+        <p>Dokter memegang kendali utama atas data pasien, dosis obat, pemberian obat, dan penunjukan PMO, sehingga implementasi berjalan optimal dan berkelanjutan.</p>
+      </div>
+      <div class="grid g-3" id="roles"></div>
+    </div>
+  </section>
+
+  <!-- ============ KETERBATASAN ============ -->
+  <section class="section" id="catatan">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <h2>Keterbatasan yang kami akui</h2>
+        <p>Dicatat terbuka supaya mitigasi bisa direncanakan bersama tenaga kesehatan.</p>
+      </div>
+      <div class="card" data-reveal="zoom">
+        <div class="grid g-2" id="limits"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="card tc" data-reveal="zoom" style="padding:var(--sp-7) var(--sp-5)">
+        <h2 class="mb-2">Coba dasbor ARTA-C sekarang</h2>
+        <p class="soft" style="max-width:52ch;margin-inline:auto">
+          Mode pratinjau membuka dasbor dengan data contoh lengkap, termasuk simulator perangkat IoT.
+          Pilih peran dokter, pengawas minum obat, atau pasien dengan satu klik, tanpa mendaftar.
+        </p>
+        <div class="row center wrapx mt-4">
+          <a class="btn btn-primary btn-lg" href="app.html?demo=1">Coba Mode Pratinjau</a>
+          <a class="btn btn-ghost btn-lg" href="app.html">Masuk dengan Akun</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap row between wrapx">
+    <div>
+      <div class="brand mb-2">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/>
+          </svg>
+        </span>
+        <span class="txt">ARTA<em>-C</em></span>
+      </div>
+      <p class="tiny mb-0">Smart medicine box &amp; aplikasi pengawas minum obat TBC.</p>
+    </div>
+    <p class="tiny mb-0">Prototipe purwarupa · bukan pengganti nasihat medis profesional.</p>
+  </div>
+</footer>
+
+<script type="module" src="js/landing.js"></script>
+</body>
+</html>

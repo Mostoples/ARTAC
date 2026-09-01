@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="neu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e8f3f6">
+<meta name="description" content="Dasbor ARTA-C: pemantauan kepatuhan minum obat TBC, alarm eskalasi, Video Observed Therapy, dan komunikasi dokter–PMO–pasien.">
+<title>Dasbor ARTA-C</title>
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2306b6d4'/%3E%3Cpath d='M10 13h12v9a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2z' fill='%23fff'/%3E%3Cpath d='M14 9h4v4h-4z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/animations.css">
+<script>
+  (function () {
+    var t = localStorage.getItem("artac.theme");
+    document.documentElement.setAttribute("data-theme", t === "glass" ? "glass" : "neu");
+  })();
+</script>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<!-- ============ BOOT ============ -->
+<div id="boot" class="auth-wrap">
+  <div class="card auth-card tc">
+    <div class="brand center mb-4" style="justify-content:center">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/>
+        </svg>
+      </span>
+      <span class="txt">ARTA<em>-C</em></span>
+    </div>
+    <div class="boot-ring" aria-hidden="true"></div>
+    <p class="soft mb-0">Menyiapkan dasbor…</p>
+  </div>
+</div>
+
+<!-- ============ AUTH ============ -->
+<div id="authView" class="auth-wrap hidden">
+  <div class="auth-card stack">
+    <div class="row between">
+      <a class="brand" href="index.html">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/>
+          </svg>
+        </span>
+        <span class="txt">ARTA<em>-C</em></span>
+      </a>
+      <div id="authTheme"></div>
+    </div>
+
+    <div class="card">
+      <div class="seg mb-4" role="tablist" aria-label="Pilih mode masuk">
+        <button type="button" role="tab" id="tabLogin" aria-selected="true">Masuk</button>
+        <button type="button" role="tab" id="tabReg" aria-selected="false">Daftar</button>
+      </div>
+
+      <!-- login -->
+      <form id="loginForm" class="stack" novalidate>
+        <h3 class="mb-0">Masuk ke dasbor</h3>
+        <p class="small soft mb-0">Gunakan akun yang terdaftar pada layanan ARTA-C.</p>
+        <div class="field">
+          <label for="liEmail">Email</label>
+          <input class="input" type="email" id="liEmail" autocomplete="email" required placeholder="nama@rs.id">
+        </div>
+        <div class="field">
+          <label for="liPass">Kata sandi</label>
+          <input class="input" type="password" id="liPass" autocomplete="current-password" required minlength="6" placeholder="••••••••">
+        </div>
+        <div id="loginErr" class="small hidden" style="color:var(--dang)" role="alert"></div>
+        <button class="btn btn-primary btn-block" type="submit" id="loginBtn">Masuk</button>
+      </form>
+
+      <!-- register -->
+      <form id="regForm" class="stack hidden" novalidate>
+        <h3 class="mb-0">Buat akun baru</h3>
+        <p class="small soft mb-0">Pilih peran sesuai tugas Anda dalam pendampingan pengobatan.</p>
+        <fieldset style="border:0;padding:0;margin:0">
+          <legend class="small soft mb-2">Peran</legend>
+          <div class="role-pick">
+            <label>
+              <input type="radio" name="role" value="dokter" checked>
+              <span aria-hidden="true">🩺</span><span>Dokter</span>
+            </label>
+            <label>
+              <input type="radio" name="role" value="pmo">
+              <span aria-hidden="true">🧑‍🤝‍🧑</span><span>Pengawas</span>
+            </label>
+            <label>
+              <input type="radio" name="role" value="pasien">
+              <span aria-hidden="true">🙋</span><span>Pasien</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="field">
+          <label for="rgName">Nama lengkap</label>
+          <input class="input" type="text" id="rgName" autocomplete="name" required placeholder="Nama sesuai identitas">
+        </div>
+        <div class="field">
+          <label for="rgEmail">Email</label>
+          <input class="input" type="email" id="rgEmail" autocomplete="email" required placeholder="nama@rs.id">
+        </div>
+        <div class="field">
+          <label for="rgPhone">Nomor telepon</label>
+          <input class="input" type="tel" id="rgPhone" autocomplete="tel" placeholder="08xx-xxxx-xxxx">
+        </div>
+        <div class="field" id="rgExtraWrap">
+          <label for="rgExtra">Rumah sakit / instansi</label>
+          <input class="input" type="text" id="rgExtra" placeholder="RSUD Cendana">
+        </div>
+        <div class="field">
+          <label for="rgPass">Kata sandi</label>
+          <input class="input" type="password" id="rgPass" autocomplete="new-password" required minlength="6" placeholder="Minimal 6 karakter">
+          <span class="hint">Minimal 6 karakter.</span>
+        </div>
+        <div id="regErr" class="small hidden" style="color:var(--dang)" role="alert"></div>
+        <button class="btn btn-primary btn-block" type="submit" id="regBtn">Daftar</button>
+      </form>
+    </div>
+
+    <div class="card tight" id="demoBox"></div>
+  </div>
+</div>
+
+<!-- ============ SHELL ============ -->
+<div id="shell" class="shell hidden">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="index.html">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/>
+        </svg>
+      </span>
+      <span class="txt">ARTA<em>-C</em></span>
+    </a>
+
+    <div class="card tight" id="whoCard"></div>
+
+    <div class="field" id="patientPickWrap">
+      <label for="patientPick">Pasien aktif</label>
+      <select class="select" id="patientPick"></select>
+    </div>
+
+    <nav class="side-nav" id="sideNav" aria-label="Navigasi dasbor"></nav>
+
+    <div class="mt-4" style="margin-top:auto">
+      <div id="shellTheme" class="mb-4"></div>
+      <button class="btn btn-ghost btn-block" id="logoutBtn">Keluar</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="appbar">
+      <button class="btn btn-icon btn-ghost burger" id="burger" aria-label="Buka menu" aria-expanded="false"></button>
+      <h2 id="viewTitle">Dasbor</h2>
+      <span class="spacer"></span>
+      <span id="simBadge"></span>
+      <button class="btn btn-sm btn-ghost" id="refreshBtn" aria-label="Muat ulang data" title="Muat ulang data">
+        <span class="rf-icon" aria-hidden="true"></span>
+        <span class="rf-text">Muat ulang</span>
+      </button>
+    </header>
+    <main class="content" id="content" tabindex="-1"></main>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

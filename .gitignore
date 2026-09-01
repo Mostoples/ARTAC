@@ -1,0 +1,25 @@
+# ── media output (generated, not source) ─────────────────────────
+video/
+shots/
+shots-tall/
+compilation/*.png
+compilation/*.pdf
+
+# ── render / capture intermediates ───────────────────────────────
+tools/work*/
+tools/wscroll*/
+tools/probe*/
+tools/scrollprobe*/
+tools/vendor/
+tools/node_modules/
+tools/package.json
+tools/package-lock.json
+tools/fonts.conf
+
+# ── Firebase cache ────────────────────────────────────────────────
+.firebase/
+
+# ── OS / editor noise ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log

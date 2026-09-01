@@ -1,0 +1,116 @@
+rules_version = '2';
+
+// ARTA-C Firestore security rules
+// Roles: "dokter" (doctor), "pmo" (pill supervisor), "pasien" (patient)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myRole() {
+      return signedIn() ? myProfile().role : 'anon';
+    }
+
+    function isDoctor() {
+      return myRole() == 'dokter';
+    }
+
+    function patientDoc(pid) {
+      return get(/databases/$(database)/documents/patients/$(pid)).data;
+    }
+
+    // A user may see a patient record when they are the treating doctor,
+    // a registered supervisor (PMO), or the patient themselves.
+    function inCareTeam(pid) {
+      let p = patientDoc(pid);
+      return signedIn() && (
+        p.doctorId == request.auth.uid ||
+        request.auth.uid in p.get('pmoIds', []) ||
+        p.get('userId', '') == request.auth.uid
+      );
+    }
+
+    // ---- user profiles -------------------------------------------------
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.role in ['dokter', 'pmo', 'pasien'];
+      // role changes are reserved for doctors (care team administration)
+      allow update: if signedIn() && (
+                      (request.auth.uid == uid && request.resource.data.role == resource.data.role)
+                      || isDoctor()
+                    );
+      allow delete: if false;
+    }
+
+    // ---- patients ------------------------------------------------------
+    match /patients/{pid} {
+      allow read: if inCareTeam(pid);
+      allow create: if isDoctor() && request.resource.data.doctorId == request.auth.uid;
+      allow update: if isDoctor() && resource.data.doctorId == request.auth.uid;
+      allow delete: if isDoctor() && resource.data.doctorId == request.auth.uid;
+
+      // dose schedules are prescribed by the doctor only
+      match /schedules/{sid} {
+        allow read: if inCareTeam(pid);
+        allow write: if isDoctor() && patientDoc(pid).doctorId == request.auth.uid;
+      }
+    }
+
+    // ---- devices (IoT smart medicine box) ------------------------------
+    match /devices/{did} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      // telemetry is written by the box gateway / simulator on behalf of the care team
+      allow create, update: if signedIn() && inCareTeam(request.resource.data.patientId);
+      allow delete: if isDoctor();
+    }
+
+    // ---- adherence, alerts, complaints, chat, VOT ----------------------
+    match /doseLogs/{id} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      allow create: if signedIn() && inCareTeam(request.resource.data.patientId);
+      allow update: if signedIn() && inCareTeam(resource.data.patientId);
+      allow delete: if isDoctor();
+    }
+
+    match /alerts/{id} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      allow create: if signedIn() && inCareTeam(request.resource.data.patientId);
+      allow update: if signedIn() && inCareTeam(resource.data.patientId);
+      allow delete: if isDoctor();
+    }
+
+    match /complaints/{id} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      allow create: if signedIn() && inCareTeam(request.resource.data.patientId);
+      allow update: if signedIn() && inCareTeam(resource.data.patientId);
+      allow delete: if isDoctor();
+    }
+
+    match /messages/{id} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      allow create: if signedIn() && inCareTeam(request.resource.data.patientId)
+                    && request.resource.data.senderId == request.auth.uid;
+      allow update: if signedIn() && inCareTeam(resource.data.patientId);
+      allow delete: if signedIn() && resource.data.senderId == request.auth.uid;
+    }
+
+    match /votSessions/{id} {
+      allow read: if signedIn() && inCareTeam(resource.data.patientId);
+      allow create: if signedIn() && inCareTeam(request.resource.data.patientId);
+      allow update: if signedIn() && inCareTeam(resource.data.patientId);
+      allow delete: if isDoctor();
+    }
+
+    // everything else is closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

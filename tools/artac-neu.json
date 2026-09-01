@@ -1,0 +1,500 @@
+{
+  "name": "ARTA-C Showcase Neumorph",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "ratio": "9:16",
+  "tracks": [
+    {
+      "type": "video",
+      "name": "shots",
+      "items": [
+        {
+          "ref": "shot0",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-01-hero.png",
+          "type": "photo",
+          "start": 0,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot1",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-02-cara-kerja.png",
+          "type": "photo",
+          "start": 2.6,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot2",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-03-perangkat.png",
+          "type": "photo",
+          "start": 5.2,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot3",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-04-aplikasi.png",
+          "type": "photo",
+          "start": 7.8,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot4",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-05-eskalasi-vot.png",
+          "type": "photo",
+          "start": 10.4,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot5",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-06-kemitraan.png",
+          "type": "photo",
+          "start": 13,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot6",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-landing-07-keterbatasan.png",
+          "type": "photo",
+          "start": 15.6,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot7",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-00-masuk.png",
+          "type": "photo",
+          "start": 18.2,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot8",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-01-ringkasan.png",
+          "type": "photo",
+          "start": 20.8,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot9",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-02-pasien.png",
+          "type": "photo",
+          "start": 23.4,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot10",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-03-jadwal.png",
+          "type": "photo",
+          "start": 26,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot11",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-04-perangkat.png",
+          "type": "photo",
+          "start": 28.6,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot12",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-05-peringatan.png",
+          "type": "photo",
+          "start": 31.2,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot13",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-06-vot.png",
+          "type": "photo",
+          "start": 33.8,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot14",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-07-keluhan.png",
+          "type": "photo",
+          "start": 36.4,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot15",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-08-konsultasi.png",
+          "type": "photo",
+          "start": 39,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot16",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-09-laporan.png",
+          "type": "photo",
+          "start": 41.6,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot17",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-10-profil.png",
+          "type": "photo",
+          "start": 44.2,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot18",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-dokter-99-menu.png",
+          "type": "photo",
+          "start": 46.8,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot19",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-pmo-01-ringkasan.png",
+          "type": "photo",
+          "start": 49.4,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot20",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-pmo-05-peringatan.png",
+          "type": "photo",
+          "start": 52,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot21",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-pasien-01-ringkasan.png",
+          "type": "photo",
+          "start": 54.6,
+          "duration": 2.6
+        },
+        {
+          "ref": "shot22",
+          "path": "C:/Users/mosto/Desktop/ARTAC/shots/neu-app-pasien-05-vot.png",
+          "type": "photo",
+          "start": 57.2,
+          "duration": 2.6
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "captions",
+      "items": [
+        {
+          "text": "ARTA-C\nSmart medicine box\npasien TBC",
+          "start": 0.3,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Cara kerja: dari resep dokter\nsampai evaluasi",
+          "start": 2.9,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Perangkat IoT\nalarm, sensor, suhu",
+          "start": 5.5,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Aplikasi PMO\nterintegrasi",
+          "start": 8.1,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Alarm eskalasi 5 tahap\n+ Video Observed Therapy",
+          "start": 10.7,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Dokter & rumah sakit\npengendali utama",
+          "start": 13.3,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Keterbatasan\nkami akui terbuka",
+          "start": 15.9,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Masuk sebagai dokter,\npengawas, atau pasien",
+          "start": 18.5,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Dasbor dokter\nkepatuhan real-time",
+          "start": 21.1,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Daftar pasien\n& status kotak obat",
+          "start": 23.7,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Penjadwalan dosis\ntersinkron ke dispenser",
+          "start": 26.3,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Telemetri kotak obat\nsuhu, baterai, sisa obat",
+          "start": 28.9,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Peringatan bertingkat\nsampai ke dokter",
+          "start": 31.5,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Verifikasi VOT\nbukti obat diminum",
+          "start": 34.1,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Keluhan pasien\ndibalas dokter",
+          "start": 36.7,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Komunikasi dua arah",
+          "start": 39.3,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Laporan evaluasi\nsiap dicetak",
+          "start": 41.9,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Profil &\ncakupan akses",
+          "start": 44.5,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Navigasi ringkas\ndi ponsel",
+          "start": 47.1,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Dasbor pengawas\nminum obat",
+          "start": 49.7,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "PMO menindaklanjuti\nalarm lebih dulu",
+          "start": 52.3,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Tampilan pasien\npengingat & progres",
+          "start": 54.9,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        },
+        {
+          "text": "Pasien merekam VOT\ndari aplikasi",
+          "start": 57.5,
+          "duration": 2,
+          "fontSize": 12,
+          "color": "#FFFFFF",
+          "y": -0.74
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "op": "transition",
+      "target": "shot0",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot1",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot2",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot3",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot4",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot5",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot6",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot7",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot8",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot9",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot10",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot11",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot12",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot13",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot14",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot15",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot16",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot17",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot18",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot19",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot20",
+      "slug": "dissolve",
+      "duration": 0.4
+    },
+    {
+      "op": "transition",
+      "target": "shot21",
+      "slug": "dissolve",
+      "duration": 0.4
+    }
+  ]
+}

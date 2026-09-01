@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ARTA-C 3D showcase scene</title>
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<script type="module">
+import * as THREE from "./vendor/three.module.js";
+
+/* ============================================================
+   ARTA-C — 3D showcase scene
+   A real Three.js scene: an Android-style handset built from
+   geometry, the app screenshot applied as a texture, three-point
+   lighting with a soft shadow, and a scripted camera move per beat.
+   The renderer is driven frame-by-frame from Playwright so the
+   output is deterministic rather than wall-clock dependent.
+   ============================================================ */
+
+const W = 1080, H = 1920;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 100);
+
+// preserveDrawingBuffer keeps the rendered frame readable after the draw
+// call, which is what lets Playwright screenshot / sample the canvas.
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: false,
+  preserveDrawingBuffer: true,
+});
+renderer.setSize(W, H, false);
+renderer.setPixelRatio(1);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+document.body.appendChild(renderer.domElement);
+
+/* ---------------- palette per theme ---------------- */
+const THEMES = {
+  neu: {
+    bgTop: 0xe8f3f6, bgBot: 0xc3e2ea,
+    body: 0x1b3a44, rim: 0x2b5a68,
+    key: 0xffffff, fill: 0xa5f3fc, rimLight: 0x22d3ee,
+    keyI: 2.5, fillI: 0.85, rimI: 1.7, ambI: 0.72,
+    floor: 0xd7ebf0, floorOpacity: 0.42,
+  },
+  glass: {
+    bgTop: 0x06303e, bgBot: 0x021419,
+    body: 0x0b2b36, rim: 0x67e8f9,
+    key: 0xffffff, fill: 0x22d3ee, rimLight: 0x67e8f9,
+    keyI: 2.2, fillI: 1.15, rimI: 2.4, ambI: 0.42,
+    floor: 0x02181f, floorOpacity: 0.55,
+  },
+};
+
+let T = THEMES.neu;
+
+/* ---------------- gradient backdrop ---------------- */
+function makeBackdrop(theme) {
+  const c = document.createElement("canvas");
+  c.width = 2; c.height = 512;
+  const g = c.getContext("2d");
+  const grad = g.createLinearGradient(0, 0, 0, 512);
+  grad.addColorStop(0, "#" + theme.bgTop.toString(16).padStart(6, "0"));
+  grad.addColorStop(1, "#" + theme.bgBot.toString(16).padStart(6, "0"));
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 2, 512);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/* ---------------- rounded-rectangle extrusion ---------------- */
+function roundedShape(w, h, r) {
+  const s = new THREE.Shape();
+  const x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+/* ---------------- phone rig ---------------- */
+// 6.1" handset proportions: 71.5 x 146.7 x 7.8 mm, scaled to scene units
+const PH_W = 1.43, PH_H = 2.934, PH_D = 0.156;
+const SCREEN_INSET = 0.052;
+
+const phone = new THREE.Group();
+scene.add(phone);
+
+let bodyMat, screenMat, rimMat;
+
+let faceZ = PH_D / 2; // front face of the chassis, including its bevel
+
+function buildPhone(theme) {
+  // chassis
+  const BEVEL = 0.022;
+  const bodyGeo = new THREE.ExtrudeGeometry(roundedShape(PH_W, PH_H, 0.17), {
+    depth: PH_D, bevelEnabled: true,
+    bevelThickness: BEVEL, bevelSize: BEVEL, bevelSegments: 4, curveSegments: 24,
+  });
+  bodyGeo.center();
+  // The bevel makes the solid deeper than `depth`, so the screen must be
+  // placed against the real bounding box or the chassis swallows it.
+  bodyGeo.computeBoundingBox();
+  faceZ = bodyGeo.boundingBox.max.z;
+  bodyMat = new THREE.MeshPhysicalMaterial({
+    color: theme.body, metalness: 0.92, roughness: 0.28,
+    clearcoat: 0.7, clearcoatRoughness: 0.22,
+  });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.castShadow = true;
+  body.receiveShadow = true;
+  phone.add(body);
+
+  // metallic edge band, slightly wider but shallower: reads as the frame
+  const rimGeo = new THREE.ExtrudeGeometry(roundedShape(PH_W + 0.016, PH_H + 0.016, 0.178), {
+    depth: PH_D * 0.55, bevelEnabled: true,
+    bevelThickness: 0.010, bevelSize: 0.010, bevelSegments: 3, curveSegments: 24,
+  });
+  rimGeo.center();
+  rimMat = new THREE.MeshPhysicalMaterial({
+    color: theme.rim, metalness: 1.0, roughness: 0.17,
+    emissive: theme.rim, emissiveIntensity: theme === THEMES.glass ? 0.22 : 0.04,
+  });
+  const rim = new THREE.Mesh(rimGeo, rimMat);
+  phone.add(rim);
+
+  // screen plane, sitting just above the chassis face
+  const scrGeo = new THREE.PlaneGeometry(PH_W - SCREEN_INSET * 2, PH_H - SCREEN_INSET * 2);
+  screenMat = new THREE.MeshBasicMaterial({ toneMapped: false });
+  const screen = new THREE.Mesh(scrGeo, screenMat);
+  screen.position.z = faceZ + 0.004;
+  phone.add(screen);
+
+  // glass sheen over the screen, adds a specular highlight
+  const glassGeo = new THREE.PlaneGeometry(PH_W - SCREEN_INSET * 2, PH_H - SCREEN_INSET * 2);
+  const glassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.06,
+    roughness: 0.08, metalness: 0.0,
+    clearcoat: 1.0, clearcoatRoughness: 0.04,
+  });
+  const glass = new THREE.Mesh(glassGeo, glassMat);
+  glass.position.z = faceZ + 0.008;
+  phone.add(glass);
+
+  // punch-hole camera
+  const holeGeo = new THREE.CircleGeometry(0.028, 24);
+  const hole = new THREE.Mesh(holeGeo, new THREE.MeshBasicMaterial({ color: 0x05080a }));
+  hole.position.set(0, PH_H / 2 - 0.115, faceZ + 0.012);
+  phone.add(hole);
+
+  // rear camera bump, visible when the phone turns
+  const bump = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(roundedShape(0.42, 0.42, 0.09), {
+      depth: 0.03, bevelEnabled: false, curveSegments: 16,
+    }),
+    new THREE.MeshPhysicalMaterial({ color: 0x0d232b, metalness: 0.9, roughness: 0.3 })
+  );
+  bump.position.set(-PH_W / 2 + 0.34, PH_H / 2 - 0.34, -PH_D / 2 - 0.03);
+  phone.add(bump);
+  for (const [dx, dy] of [[-0.08, 0.08], [0.08, 0.08], [-0.08, -0.08]]) {
+    const lens = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.052, 0.052, 0.022, 20),
+      new THREE.MeshPhysicalMaterial({ color: 0x041014, metalness: 1, roughness: 0.12 })
+    );
+    lens.rotation.x = Math.PI / 2;
+    lens.position.set(bump.position.x + dx, bump.position.y + dy, -PH_D / 2 - 0.05);
+    phone.add(lens);
+  }
+
+  // side buttons
+  const btnMat = new THREE.MeshPhysicalMaterial({ color: theme.rim, metalness: 1, roughness: 0.2 });
+  const power = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.26, PH_D * 0.5), btnMat);
+  power.position.set(PH_W / 2 + 0.004, 0.42, 0);
+  phone.add(power);
+  const vol = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.44, PH_D * 0.5), btnMat);
+  vol.position.set(-PH_W / 2 - 0.004, 0.55, 0);
+  phone.add(vol);
+}
+
+/* ---------------- contact shadow floor ---------------- */
+let floor;
+function buildFloor(theme) {
+  floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(30, 30),
+    new THREE.ShadowMaterial({ color: theme.floor, opacity: theme.floorOpacity })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -PH_H / 2 - 0.42;
+  floor.receiveShadow = true;
+  scene.add(floor);
+}
+
+/* ---------------- lighting ---------------- */
+let keyLight, fillLight, rimLight, ambient;
+function buildLights(theme) {
+  ambient = new THREE.AmbientLight(0xffffff, theme.ambI);
+  scene.add(ambient);
+
+  keyLight = new THREE.DirectionalLight(theme.key, theme.keyI);
+  keyLight.position.set(3.4, 5.2, 4.6);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.set(2048, 2048);
+  keyLight.shadow.camera.near = 0.5;
+  keyLight.shadow.camera.far = 24;
+  keyLight.shadow.camera.left = -5;
+  keyLight.shadow.camera.right = 5;
+  keyLight.shadow.camera.top = 6;
+  keyLight.shadow.camera.bottom = -6;
+  keyLight.shadow.bias = -0.0009;
+  keyLight.shadow.radius = 4;
+  scene.add(keyLight);
+
+  fillLight = new THREE.DirectionalLight(theme.fill, theme.fillI);
+  fillLight.position.set(-4.2, 1.4, 3.2);
+  scene.add(fillLight);
+
+  rimLight = new THREE.SpotLight(theme.rimLight, theme.rimI, 24, Math.PI / 5, 0.5, 1.4);
+  rimLight.position.set(-2.4, 3.0, -4.2);
+  scene.add(rimLight);
+
+  // subtle cyan bounce from below, ties the phone to the palette
+  const under = new THREE.PointLight(theme.rimLight, 0.55, 12);
+  under.position.set(0, -2.6, 1.6);
+  scene.add(under);
+}
+
+/* ---------------- texture loading ---------------- */
+const loader = new THREE.TextureLoader();
+const cache = new Map();
+
+/* Aspect of the visible screen window, used to work out how much of a
+   tall page fits at once and therefore how far it can scroll. */
+const SCREEN_ASPECT = (PH_H - SCREEN_INSET * 2) / (PH_W - SCREEN_INSET * 2);
+
+let scrollRange = 0; // 0 = page fits, 0.6 = 60% of the texture is off-screen
+
+/* Short pages leave almost nothing to scroll. Zooming the texture window
+   in slightly gives them real travel, at the cost of showing less width.
+   0.72 means "aim to show at most 72% of the page at once". */
+const MIN_SCROLL_TARGET = 0.72;
+const MAX_ZOOM = 1.35;
+
+async function setScreen(src) {
+  let tex = cache.get(src);
+  if (!tex) {
+    tex = await new Promise((ok, no) => loader.load(src, ok, undefined, no));
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    // Mipmaps blur a UV-scrolled texture, and REPEAT would wrap the page
+    // around at the seam. Clamp + linear keeps the scroll crisp and bounded.
+    tex.generateMipmaps = false;
+    tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.wrapS = THREE.ClampToEdgeWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
+    cache.set(src, tex);
+  }
+
+  /* Show a window of the tall page that matches the screen's aspect, so
+     the UI keeps its true proportions instead of being squashed.
+
+     Short pages would otherwise have almost nothing to scroll. For those,
+     zoom in (show a narrower slice of the width) which shrinks the visible
+     height too and buys real scroll travel. Aspect stays correct because
+     width and height are scaled together. */
+  const iw = tex.image.width, ih = tex.image.height;
+  let zoom = 1;
+  const naturalVisible = (iw * SCREEN_ASPECT) / ih;
+  if (naturalVisible > MIN_SCROLL_TARGET) {
+    // want visible <= target, and visible scales with 1/zoom
+    zoom = Math.min(MAX_ZOOM, naturalVisible / MIN_SCROLL_TARGET);
+  }
+
+  const repeatX = 1 / zoom;
+  const windowH = (iw * repeatX) * SCREEN_ASPECT;
+  const visible = Math.min(1, windowH / ih);
+
+  tex.repeat.set(repeatX, visible);
+  tex.offset.x = (1 - repeatX) / 2;   // keep the page horizontally centred
+  scrollRange = Math.max(0, 1 - visible);
+
+  screenMat.map = tex;
+  screenMat.needsUpdate = true;
+  setScroll(0);
+}
+
+/** Scrolls the page inside the screen. p = 0 (top) .. 1 (bottom). */
+function setScroll(p) {
+  const tex = screenMat.map;
+  if (!tex) return;
+  const q = Math.max(0, Math.min(1, p));
+  // texture V axis runs bottom-up, so invert to scroll downward
+  tex.offset.y = scrollRange * (1 - q);
+  tex.needsUpdate = true;
+}
+
+/* ---------------- scene init ---------------- */
+function init(themeName) {
+  T = THEMES[themeName] || THEMES.neu;
+  scene.background = makeBackdrop(T);
+  buildLights(T);
+  buildPhone(T);
+  buildFloor(T);
+}
+
+/* ---------------- camera choreography ----------------
+   Each beat interpolates between two camera/phone poses with
+   an ease so the motion settles rather than stopping abruptly. */
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* Camera moves are deliberately restrained: the content scrolls inside the
+   screen during each beat, so a large orbit would fight the scroll for the
+   viewer's attention. Each beat drifts a short distance and settles.
+   Distances keep the handset clear of the kicker and the caption card. */
+const MOVES = [
+  // slight orbit in from the right, settling near-front
+  { cam: [[2.2, 0.5, 8.2], [1.1, 0.25, 7.6]], rot: [[-0.20, 0.30, 0.03], [-0.08, 0.13, 0.01]] },
+  // mirror: drift from the left
+  { cam: [[-2.0, 0.6, 8.1], [-1.0, 0.22, 7.6]], rot: [[-0.18, -0.28, -0.03], [-0.07, -0.12, -0.01]] },
+  // gentle rise, ends square to camera
+  { cam: [[0.4, -1.2, 8.0], [0.1, 0.25, 7.5]], rot: [[0.14, 0.08, 0.01], [-0.04, 0.04, 0.0]] },
+  // slow pull back, small yaw
+  { cam: [[1.0, 1.2, 7.5], [0.5, 0.35, 8.1]], rot: [[-0.24, 0.18, 0.02], [-0.08, 0.07, 0.01]] },
+  // soft push-in from the left
+  { cam: [[-1.4, 0.2, 7.4], [-0.5, 0.28, 7.8]], rot: [[-0.05, -0.24, -0.02], [-0.07, -0.07, 0.0]] },
+  // final hero settle, centred
+  { cam: [[1.4, 0.7, 8.0], [0.0, 0.22, 7.4]], rot: [[-0.16, 0.22, 0.02], [-0.04, 0.02, 0.0]] },
+];
+
+function applyPose(beat, p) {
+  const m = MOVES[beat % MOVES.length];
+  const e = ease(Math.max(0, Math.min(1, p)));
+  camera.position.set(
+    lerp(m.cam[0][0], m.cam[1][0], e),
+    lerp(m.cam[0][1], m.cam[1][1], e),
+    lerp(m.cam[0][2], m.cam[1][2], e)
+  );
+  camera.lookAt(0, 0, 0);
+  phone.rotation.set(
+    lerp(m.rot[0][0], m.rot[1][0], e),
+    lerp(m.rot[0][1], m.rot[1][1], e),
+    lerp(m.rot[0][2], m.rot[1][2], e)
+  );
+  // a touch of float so the handset never feels pinned
+  phone.position.y = Math.sin(e * Math.PI) * 0.05;
+  renderer.render(scene, camera);
+}
+
+/* Playwright drives these. */
+window.ARTAC = {
+  init,
+  setScreen,
+  setScroll,
+  applyPose,
+  /* applyPose draws immediately, so any state changed after it (such as the
+     scroll offset) needs an explicit redraw before the frame is captured. */
+  redraw: () => renderer.render(scene, camera),
+  scrollRange: () => scrollRange,
+  /* Ground truth for tests: the UV window currently shown. */
+  uv: () => ({
+    offsetY: screenMat.map ? screenMat.map.offset.y : null,
+    repeatY: screenMat.map ? screenMat.map.repeat.y : null,
+  }),
+  ready: () => Boolean(screenMat && screenMat.map),
+  boundTexture: () => (screenMat && screenMat.map ? screenMat.map.image?.currentSrc || screenMat.map.image?.src || null : null),
+
+  /* Projects the screen plane's corners into pixel coordinates for the
+     current pose. Lets a test crop exactly the display area, instead of
+     guessing where the handset landed. */
+  screenRect: () => {
+    const sw = PH_W - SCREEN_INSET * 2, sh = PH_H - SCREEN_INSET * 2;
+    const corners = [
+      new THREE.Vector3(-sw / 2, -sh / 2, faceZ + 0.004),
+      new THREE.Vector3(sw / 2, -sh / 2, faceZ + 0.004),
+      new THREE.Vector3(sw / 2, sh / 2, faceZ + 0.004),
+      new THREE.Vector3(-sw / 2, sh / 2, faceZ + 0.004),
+    ];
+    const pts = corners.map((v) => {
+      const w = v.clone().applyMatrix4(phone.matrixWorld).project(camera);
+      return { x: (w.x * 0.5 + 0.5) * W, y: (-w.y * 0.5 + 0.5) * H };
+    });
+    const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+    return {
+      x: Math.max(0, Math.round(Math.min(...xs))),
+      y: Math.max(0, Math.round(Math.min(...ys))),
+      w: Math.round(Math.min(...[W, Math.max(...xs)]) - Math.max(0, Math.min(...xs))),
+      h: Math.round(Math.min(...[H, Math.max(...ys)]) - Math.max(0, Math.min(...ys))),
+    };
+  },
+  info: () => {
+    const screen = phone.children.find((c) => c.material === screenMat);
+    return {
+      webgl: Boolean(renderer.getContext()),
+      renderer: renderer.getContext().getParameter(renderer.getContext().VERSION),
+      shadows: renderer.shadowMap.enabled,
+      objects: scene.children.length,
+      phoneParts: phone.children.length,
+      faceZ: Number(faceZ.toFixed(4)),
+      screenLit: Boolean(screen && screen.position.z > faceZ),
+    };
+  },
+};
+window.__sceneLoaded = true;
+</script>
+</body>
+</html>

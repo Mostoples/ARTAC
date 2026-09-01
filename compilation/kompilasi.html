@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="neu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARTA-C · Kompilasi Halaman Aplikasi</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cy-100: #cffafe; --cy-200: #a5f3fc; --cy-300: #67e8f9;
+    --cy-400: #22d3ee; --cy-500: #06b6d4; --cy-600: #0891b2;
+    --cy-700: #0e7490; --cy-800: #155e75;
+    --sheet-w: 2100px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- theme: neumorphism ---- */
+  [data-theme="neu"] {
+    --bg: #e8f3f6;
+    --surface: #e8f3f6;
+    --fg: #1d3c46;
+    --fg-soft: #5b7d88;
+    --fg-mute: #86a2ab;
+    --line: rgba(23, 78, 92, .1);
+    --accent-ink: var(--cy-700);
+    --accent-soft: #d3edf3;
+    --card-bd: 0 solid transparent;
+    --sh-out: 10px 10px 26px #bfd7de, -10px -10px 26px #ffffff;
+    --sh-sm: 5px 5px 12px #c6dce2, -5px -5px 12px #ffffff;
+    --shot-bd: 1px solid rgba(23, 78, 92, .1);
+  }
+
+  /* ---- theme: glassmorphism ---- */
+  [data-theme="glass"] {
+    --bg: #04212b;
+    --surface: rgba(255, 255, 255, .1);
+    --fg: #eafbff;
+    --fg-soft: #a9d7e3;
+    --fg-mute: #7fb3c2;
+    --line: rgba(255, 255, 255, .2);
+    --accent-ink: var(--cy-200);
+    --accent-soft: rgba(103, 232, 249, .16);
+    --card-bd: 1px solid var(--line);
+    --sh-out: 0 22px 60px rgba(2, 18, 24, .5);
+    --sh-sm: 0 10px 26px rgba(2, 18, 24, .4);
+    --shot-bd: 1px solid rgba(255, 255, 255, .22);
+  }
+
+  .aurora { display: none; }
+  [data-theme="glass"] .aurora {
+    display: block; position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    background:
+      radial-gradient(1200px 700px at 10% -8%, #0e7490 0%, transparent 60%),
+      radial-gradient(1000px 620px at 92% 6%, #155e75 0%, transparent 62%),
+      linear-gradient(160deg, #04212b 0%, #062f3d 55%, #04212b 100%);
+  }
+
+  .sheet {
+    position: relative; z-index: 1;
+    width: var(--sheet-w);
+    margin: 0 auto;
+    padding: 64px 68px 58px;
+  }
+
+  /* ---------------- header ---------------- */
+  header.top {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 40px; padding-bottom: 30px; margin-bottom: 44px;
+    border-bottom: 2px solid var(--line);
+  }
+
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand .mark {
+    width: 76px; height: 76px; border-radius: 22px; flex: none;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--cy-300), var(--cy-600));
+    color: #04222b; box-shadow: var(--sh-sm);
+  }
+  .brand h1 {
+    margin: 0; font-size: 52px; font-weight: 800; letter-spacing: -.03em; line-height: 1;
+  }
+  .brand h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--cy-600), var(--cy-400));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  [data-theme="glass"] .brand h1 em {
+    background-image: linear-gradient(90deg, var(--cy-200), #fff);
+  }
+  .brand .sub {
+    margin-top: 8px; font-size: 21px; font-weight: 500; color: var(--fg-soft);
+  }
+
+  .head-right { text-align: right; }
+  .title {
+    font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin: 0 0 10px;
+  }
+  .chips { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 18px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-ink);
+    border: var(--card-bd);
+    font-size: 16px; font-weight: 700;
+  }
+  .chip .dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; }
+
+  /* ---------------- grid: 2 rows x 4 ---------------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px 34px;
+  }
+
+  figure.shot {
+    margin: 0; display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .frame {
+    position: relative;
+    border-radius: 26px;
+    background: var(--surface);
+    border: var(--card-bd);
+    box-shadow: var(--sh-out);
+    padding: 14px;
+  }
+  [data-theme="glass"] .frame {
+    -webkit-backdrop-filter: saturate(150%) blur(18px);
+    backdrop-filter: saturate(150%) blur(18px);
+  }
+  .frame img {
+    display: block; width: 100%; height: auto;
+    border-radius: 16px;
+    border: var(--shot-bd);
+  }
+
+  .num {
+    position: absolute; top: -14px; left: -14px;
+    width: 52px; height: 52px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--cy-300), var(--cy-600));
+    color: #04222b;
+    font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 24px;
+    box-shadow: var(--sh-sm);
+    border: 3px solid var(--bg);
+    z-index: 2;
+  }
+  [data-theme="glass"] .num { border-color: #0a2f3c; }
+
+  figcaption .cap-t {
+    font-size: 25px; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+  }
+  figcaption .cap-d {
+    margin-top: 6px; font-size: 18px; line-height: 1.45; color: var(--fg-soft);
+  }
+  figcaption .role {
+    display: inline-block; margin-top: 10px;
+    padding: 4px 13px; border-radius: 999px;
+    font-size: 14px; font-weight: 700;
+    background: var(--accent-soft); color: var(--accent-ink);
+    border: var(--card-bd);
+  }
+
+  /* ---------------- footer ---------------- */
+  footer.bot {
+    margin-top: 48px; padding-top: 26px;
+    border-top: 2px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between; gap: 30px;
+    font-size: 18px; color: var(--fg-mute);
+  }
+  footer.bot b { color: var(--fg-soft); }
+
+  /* on-screen theme switch, hidden in exports */
+  .switch-wrap {
+    position: fixed; right: 26px; bottom: 26px; z-index: 20;
+    display: flex; gap: 8px; padding: 8px;
+    border-radius: 999px; background: var(--surface);
+    border: var(--card-bd); box-shadow: var(--sh-out);
+  }
+  .switch-wrap button {
+    border: 0; padding: 12px 22px; border-radius: 999px;
+    font: inherit; font-weight: 700; font-size: 16px;
+    background: transparent; color: var(--fg-soft); cursor: pointer;
+  }
+  .switch-wrap button[aria-pressed="true"] {
+    background: linear-gradient(135deg, var(--cy-400), var(--cy-600));
+    color: #04222b;
+  }
+  .exporting .switch-wrap { display: none; }
+
+  @media print {
+    .switch-wrap { display: none; }
+    body { background: #fff; }
+    .sheet { width: 100%; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+
+<div class="sheet" id="sheet">
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 10h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M10 6h4v4h-4z"/>
+          <path d="M12 14v3"/><path d="M10.5 15.5h3"/>
+        </svg>
+      </span>
+      <div>
+        <h1>ARTA<em>-C</em></h1>
+        <div class="sub">Smart medicine box &amp; aplikasi pengawas minum obat TBC</div>
+      </div>
+    </div>
+    <div class="head-right">
+      <p class="title">Kompilasi Halaman Aplikasi</p>
+      <div class="chips">
+        <span class="chip"><span class="dot"></span>IoT + PMO Terintegrasi</span>
+        <span class="chip">Video Observed Therapy</span>
+        <span class="chip">Alarm Eskalasi 5 Tahap</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer class="bot">
+    <div><b>arta-id.web.app</b> · 8 halaman inti dari 10 halaman aplikasi</div>
+    <div id="themeName">Tema Neumorphism</div>
+    <div>Prototipe purwarupa · bukan pengganti nasihat medis profesional</div>
+  </footer>
+</div>
+
+<div class="switch-wrap" role="group" aria-label="Pilih tema">
+  <button type="button" data-t="neu" aria-pressed="true">Neumorf</button>
+  <button type="button" data-t="glass" aria-pressed="false">Glass</button>
+</div>
+
+<script>
+/* The eight pages that carry the product story: doctor sets up therapy,
+   the box reports back, escalation and VOT close the adherence loop,
+   then communication and reporting wrap it up. */
+const ITEMS = [
+  { f: "app-dokter-01-ringkasan.png", t: "Dasbor Ringkasan",
+    d: "Skor kepatuhan, dosis berikutnya, sisa obat, dan hari berturut patuh dalam satu layar.",
+    r: "Dokter · PMO · Pasien" },
+  { f: "app-dokter-02-pasien.png", t: "Daftar Pasien",
+    d: "Kohort pasien dengan kepatuhan per orang dan status koneksi kotak obat.",
+    r: "Dokter · PMO" },
+  { f: "app-dokter-03-jadwal.png", t: "Jadwal &amp; Ceklist Dosis",
+    d: "Dokter menetapkan dosis dan jam minum, tersinkron ke dispenser. Ceklist terisi dari sensor.",
+    r: "Dokter" },
+  { f: "app-dokter-04-perangkat.png", t: "Kotak Obat IoT",
+    d: "Telemetri suhu, kelembapan, baterai, sisa obat, dan sensor gerak saat obat diambil.",
+    r: "Dokter · PMO · Pasien" },
+  { f: "app-dokter-05-peringatan.png", t: "Alarm Eskalasi",
+    d: "Bila dosis tak direspons, notifikasi naik bertahap dari kotak ke pasien, PMO, lalu dokter.",
+    r: "Dokter · PMO" },
+  { f: "app-pasien-05-vot.png", t: "Video Observed Therapy",
+    d: "Pasien merekam bukti menelan obat, PMO dan dokter meninjau lalu memverifikasi.",
+    r: "Pasien merekam" },
+  { f: "app-dokter-08-konsultasi.png", t: "Konsultasi Dua Arah",
+    d: "Percakapan pasien, pengawas, dan dokter tersimpan dalam satu riwayat.",
+    r: "Dokter · PMO · Pasien" },
+  { f: "app-dokter-09-laporan.png", t: "Laporan Evaluasi",
+    d: "Rekap kepatuhan, tren mingguan, prediksi obat habis, dan kesimpulan otomatis.",
+    r: "Dokter" },
+];
+
+const grid = document.getElementById("grid");
+
+function render(theme) {
+  grid.innerHTML = ITEMS.map((it, i) => `
+    <figure class="shot">
+      <div class="frame">
+        <span class="num">${i + 1}</span>
+        <img src="../shots/${theme}/${it.f}" alt="${it.t}" width="1080" height="1920">
+      </div>
+      <figcaption>
+        <div class="cap-t">${it.t}</div>
+        <div class="cap-d">${it.d}</div>
+        <span class="role">${it.r}</span>
+      </figcaption>
+    </figure>`).join("");
+}
+
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  document.getElementById("themeName").textContent =
+    t === "glass" ? "Tema Glassmorphism" : "Tema Neumorphism";
+  document.querySelectorAll(".switch-wrap button").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.t === t));
+  });
+  render(t);
+}
+
+document.querySelectorAll(".switch-wrap button").forEach((b) => {
+  b.addEventListener("click", () => setTheme(b.dataset.t));
+});
+
+// allow ?theme=glass so the exporter can pick a theme up front
+const q = new URLSearchParams(location.search).get("theme");
+setTheme(q === "glass" ? "glass" : "neu");
+</script>
+</body>
+</html>

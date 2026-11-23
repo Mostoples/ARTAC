@@ -125,6 +125,7 @@ export function overview(s) {
         <div class="card-head"><h3>${icon("box")} Kondisi kotak obat</h3>
           <span class="badge ${device?.online ? "ok" : "dang"}"><span class="dot ${device?.online ? "ok live" : "dang"}"></span>${device?.online ? "Online" : "Offline"}</span></div>
         ${device ? `
+        ${twin3d(device, true)}
         <div class="row wrapx between mb-4">
           <div class="temp-ring ${Number(device.tempC) > TEMP_LIMITS.max ? "alarm-on" : ""}">${Number(device.tempC).toFixed(1)}°<small>suhu</small></div>
           <div class="temp-ring">${device.humidity}%<small>kelembapan</small></div>
@@ -164,8 +165,15 @@ export function overview(s) {
   </div>`;
 }
 
+const ICO3D = { chart: "centang", clock: "lonceng", pill: "blister", check: "pil", alert: "lonceng", video: "wajah",
+  doc: "jantung", box: "wadah" };
+const ico3d = (ic) => (ICO3D[ic] ? `<img class="ico3d" src="showcase/ikon/${ICO3D[ic]}.png" alt="" aria-hidden="true">` : "");
+const twin3d = (device, mini) => device ? `<div class="twin3d${mini ? " mini" : ""}" data-online="${device.online ? 1 : 0}"
+  data-batt="${esc(device.battery)}" data-temp="${esc(Number(device.tempC).toFixed(1))}" data-pills="${esc(device.pillsLeft)}"
+  data-left="${Math.min(28, Number(device.pillsLeft) || 0)}"></div>` : "";
+
 function statTile(label, value, foot, ic, warn = false) {
-  return `<div class="card tight">
+  return `<div class="card tight">${ico3d(ic)}
     <div class="row between mb-2">
       <span class="tile-icon" ${warn ? 'style="background:color-mix(in srgb, var(--warn) 20%, transparent);color:var(--warn)"' : ""}>${icon(ic, 20)}</span>
     </div>
@@ -176,7 +184,7 @@ function statTile(label, value, foot, ic, warn = false) {
 }
 
 function miniCard(title, n, foot, ic, nav, warn) {
-  return `<a class="card tight hover" href="#${nav}" data-nav="${nav}" style="text-decoration:none;color:inherit">
+  return `<a class="card tight hover" href="#${nav}" data-nav="${nav}" style="text-decoration:none;color:inherit">${ico3d(ic)}
     <div class="row">
       <span class="tile-icon" ${warn ? 'style="background:color-mix(in srgb, var(--dang) 16%, transparent);color:var(--dang)"' : ""}>${icon(ic, 20)}</span>
       <div class="grow"><div class="stat"><span class="label">${esc(title)}</span>
@@ -340,6 +348,7 @@ export function deviceView(s) {
           ${device.alarmOn ? '<span class="badge dang">Alarm aktif</span>' : ""}
         </div>
       </div>
+      ${twin3d(device, false)}
       <div class="sim-grid">
         ${simCell("Suhu kompartemen", `${Number(device.tempC).toFixed(1)}°C`, `target ${device.targetTempC}°C · ambang ${TEMP_LIMITS.min}–${TEMP_LIMITS.max}°C`, tempBad)}
         ${simCell("Kelembapan", `${device.humidity}%`, "menjaga obat tidak lembap")}

@@ -1,0 +1,86 @@
+[
+ {
+  "id": "01",
+  "shot": "dawn",
+  "text": "Tuberculosis is curable.",
+  "dur": 2.81
+ },
+ {
+  "id": "02",
+  "shot": "dawn",
+  "text": "But only if you finish the treatment.",
+  "dur": 2.98
+ },
+ {
+  "id": "03",
+  "shot": "days",
+  "text": "Six months. One hundred and eighty mornings. Every single dose.",
+  "dur": 7.1
+ },
+ {
+  "id": "04",
+  "shot": "slip",
+  "text": "Patients often feel better within weeks, and that is when doses start to slip.",
+  "dur": 5.57
+ },
+ {
+  "id": "05",
+  "shot": "pmo",
+  "text": "In Indonesia, every patient has a treatment supervisor, a P.M.O. But no supervisor can be there every morning.",
+  "dur": 9.14
+ },
+ {
+  "id": "06",
+  "shot": "reveal",
+  "text": "So we built a companion that is.",
+  "dur": 3.07
+ },
+ {
+  "id": "07",
+  "shot": "reveal",
+  "text": "ARTA-C.",
+  "dur": 1.87
+ },
+ {
+  "id": "08",
+  "shot": "face",
+  "text": "It knows who is taking the medicine.",
+  "dur": 2.95
+ },
+ {
+  "id": "09",
+  "shot": "ppg",
+  "text": "It reads the pulse and oxygen level through a light-sealed finger sensor.",
+  "dur": 5.06
+ },
+ {
+  "id": "10",
+  "shot": "inside",
+  "text": "Inside, the original blister moves down, row by row, like bread in a toaster.",
+  "dur": 6.55
+ },
+ {
+  "id": "11",
+  "shot": "peck",
+  "text": "A small plunger presses one caplet through the foil. Never more. Never less.",
+  "dur": 7.92
+ },
+ {
+  "id": "12",
+  "shot": "notify",
+  "text": "Seconds later, the supervisor knows. Dose taken. Verified.",
+  "dur": 7.34
+ },
+ {
+  "id": "13",
+  "shot": "end",
+  "text": "Day forty-seven. One hundred and thirty-three to go.",
+  "dur": 4.97
+ },
+ {
+  "id": "14",
+  "shot": "end",
+  "text": "No dose goes unseen.",
+  "dur": 2.66
+ }
+]

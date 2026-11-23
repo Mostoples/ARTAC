@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ARTA-C device UI (CYD 320x240) - concept B, glass depth</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Token AQUENT, varian gelap "glass depth" untuk layar TFT */
+  :root{--ink:#F3F7FF;--ink2:#BFD3FF;--mut:#86A2D6;--blue:#5FA2FF;--deep:#2F7BFF;--ok:#3CE3A0;--warn:#FFC24D;--red:#FF5A72;
+        --card:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));--line:rgba(255,255,255,.14);
+        --raise:0 6px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25);
+        --aura:0 0 0 1px rgba(140,198,255,.35),0 10px 26px rgba(47,123,255,.45)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:320px;height:240px;overflow:hidden;font-family:"Plus Jakarta Sans","Segoe UI",sans-serif;color:var(--ink)}
+  .scr{position:relative;width:320px;height:240px;overflow:hidden;display:none;
+       background:radial-gradient(110% 90% at 80% -10%,#2F7BFF 0%,#1646D6 28%,#0B1E4A 70%)}
+  .scr.red{background:radial-gradient(110% 90% at 80% -10%,#FF5A72 0%,#8E1F4A 32%,#1A0E2E 75%)}
+  .scr.green{background:radial-gradient(110% 90% at 50% -10%,#3CE3A0 0%,#0E7A5E 32%,#06233A 75%)}
+  .on{display:block}
+  .card{position:absolute;border-radius:14px;background:var(--card);box-shadow:var(--raise);border:1px solid var(--line)}
+  .hero{box-shadow:var(--aura)}
+  .chip{position:absolute;font-size:8.5px;font-weight:700;letter-spacing:.08em;color:var(--blue);text-transform:uppercase}
+  .top{position:absolute;left:12px;top:8px;right:12px;height:18px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:800;font-size:12px;letter-spacing:.02em}.brand b{color:var(--blue)}
+  .stat{display:flex;gap:8px;font-size:9px;font-weight:700;color:var(--ink2);align-items:center}
+  .stat img{width:13px;height:13px;vertical-align:-3px;margin-right:2px}
+  .t{position:absolute}
+  .big{font-weight:800;line-height:1}
+  .lbl{font-size:9px;font-weight:600;color:var(--ink2)}
+  .h1{font-size:19px;font-weight:800;line-height:1.15}
+  .ico{position:absolute;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+  .btn{position:absolute;border-radius:999px;background:linear-gradient(135deg,#5FA2FF,#1646D6);color:#fff;font-weight:800;
+       font-size:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(47,123,255,.5)}
+  .btn.ghost{background:rgba(255,255,255,.12);box-shadow:none;border:1px solid var(--line);color:var(--ink2)}
+  .dot{position:absolute;width:15px;height:9px;border-radius:5px}
+  .row{position:absolute;left:12px;right:12px;height:30px;display:flex;align-items:center;justify-content:space-between;
+       font-size:10.5px;font-weight:700;border-radius:11px;padding:0 10px;background:rgba(255,255,255,.08);border:1px solid var(--line)}
+  .tog{width:30px;height:16px;border-radius:9px;background:var(--deep);position:relative}
+  .tog::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff}
+  svg text{font-family:"Plus Jakarta Sans",sans-serif}
+</style>
+</head>
+<body>
+
+<!-- 1 BOOT -->
+<section class="scr" id="boot">
+  <img class="ico" src="ikon/pil.png" style="left:110px;top:30px;width:100px">
+  <div class="t big" style="left:0;right:0;top:132px;text-align:center;font-size:30px">ARTA<span style="color:var(--blue)">-C</span></div>
+  <div class="t lbl" style="left:0;right:0;top:168px;text-align:center;font-size:10px">Smart TB medication companion</div>
+  <div class="t" style="left:90px;top:196px;width:140px;height:5px;border-radius:3px;background:rgba(255,255,255,.12)"></div>
+  <div class="t" style="left:90px;top:196px;width:96px;height:5px;border-radius:3px;background:linear-gradient(90deg,#5FA2FF,#2F7BFF)"></div>
+  <div class="t lbl" style="left:0;right:0;top:208px;text-align:center;font-size:8px;color:var(--mut)">Connecting to ARTA-C cloud…</div>
+</section>
+
+<!-- 2 HOME -->
+<section class="scr" id="home">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div>
+    <div class="stat"><span><img src="ikon/termometer.png">27°C</span><span>58%</span><span><img src="ikon/baterai.png">86%</span><span>06:52</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:170px;height:198px"></div>
+  <div class="chip" style="left:22px;top:42px">Next dose</div>
+  <svg style="position:absolute;left:24px;top:56px" width="142" height="142" viewBox="0 0 142 142">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5FA2FF"/><stop offset="1" stop-color="#2F7BFF"/></linearGradient></defs>
+    <circle cx="71" cy="71" r="60" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="11"/>
+    <circle cx="71" cy="71" r="60" fill="none" stroke="url(#g1)" stroke-width="11" stroke-linecap="round" stroke-dasharray="377" stroke-dashoffset="99" transform="rotate(-90 71 71)"/>
+    <text x="71" y="70" text-anchor="middle" font-size="30" font-weight="800" fill="#F3F7FF">07:00</text>
+    <text x="71" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="#BFD3FF">in 8 minutes</text>
+  </svg>
+  <img class="ico" src="ikon/pil.png" style="left:118px;top:150px;width:58px">
+  <div class="t lbl" style="left:22px;top:206px"><b style="color:var(--ink)">3 caplets</b> · 4FDC</div>
+  <div class="card" style="left:188px;top:32px;width:122px;height:62px"></div>
+  <div class="chip" style="left:198px;top:40px">Treatment</div>
+  <div class="t big" style="left:198px;top:54px;font-size:22px">Day 47</div>
+  <div class="t lbl" style="left:198px;top:79px">of 180 · 26% done</div>
+  <div class="card" style="left:188px;top:100px;width:122px;height:62px"></div>
+  <img class="ico" src="ikon/blister.png" style="left:248px;top:106px;width:58px">
+  <div class="chip" style="left:198px;top:108px">Blister</div>
+  <div class="t big" style="left:198px;top:122px;font-size:22px">19</div>
+  <div class="t lbl" style="left:198px;top:146px">left of 28</div>
+  <div class="card" style="left:188px;top:168px;width:122px;height:62px"></div>
+  <img class="ico" src="ikon/centang.png" style="left:258px;top:176px;width:44px">
+  <div class="chip" style="left:198px;top:176px;color:var(--ok)">This week</div>
+  <div class="t big" style="left:198px;top:190px;font-size:22px">7/7</div>
+  <div class="t lbl" style="left:198px;top:214px">doses taken</div>
+</section>
+
+<!-- 3 ALARM -->
+<section class="scr" id="alarm">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span style="color:var(--warn)">● alarm</span><span>07:00</span></div></div>
+  <img class="ico" src="ikon/lonceng.png" style="left:18px;top:40px;width:110px">
+  <div class="chip" style="left:140px;top:48px;color:var(--warn)">Day 47 · morning dose</div>
+  <div class="t h1" style="left:140px;top:62px;width:170px">Time for your<br>medicine</div>
+  <div class="t lbl" style="left:140px;top:112px;font-size:10px">3 caplets · take with water</div>
+  <div class="card" style="left:140px;top:132px;width:170px;height:36px"></div>
+  <div class="t lbl" style="left:152px;top:138px">Respond within</div>
+  <div class="t big" style="left:152px;top:150px;font-size:13px">59:12 <span style="font-size:9px;color:var(--mut);font-weight:600">min · PMO notified after</span></div>
+  <div class="btn" style="left:12px;top:186px;width:200px;height:42px;font-size:13px">I'm ready ›</div>
+  <div class="btn ghost" style="left:220px;top:186px;width:88px;height:42px">Snooze 5'</div>
+</section>
+
+<!-- 4 FACE -->
+<section class="scr" id="face">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span>Step 1 of 3</span><span>Face check</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:150px;height:198px;overflow:hidden;background:linear-gradient(180deg,#3B5C9E,#1B2F63)"></div>
+  <svg style="position:absolute;left:10px;top:32px" width="150" height="198" viewBox="0 0 150 198">
+    <ellipse cx="75" cy="86" rx="30" ry="37" fill="#9DB5E6" opacity=".55"/>
+    <path d="M25 198 C30 150 120 150 125 198 Z" fill="#9DB5E6" opacity=".45"/>
+    <g fill="none" stroke="#5FA2FF" stroke-width="4" stroke-linecap="round">
+      <path d="M30 44 V30 H44"/><path d="M106 30 H120 V44"/><path d="M30 130 V144 H44"/><path d="M106 144 H120 V130"/></g>
+    <line x1="34" y1="96" x2="116" y2="96" stroke="#3CE3A0" stroke-width="2" opacity=".9"/>
+    <g fill="#3CE3A0"><circle cx="62" cy="78" r="2"/><circle cx="88" cy="78" r="2"/><circle cx="75" cy="94" r="2"/><circle cx="65" cy="106" r="2"/><circle cx="85" cy="106" r="2"/></g>
+  </svg>
+  <div class="chip" style="left:172px;top:44px">ESP32-CAM</div>
+  <div class="t h1" style="left:172px;top:58px;font-size:16px">Look at the<br>camera</div>
+  <svg style="position:absolute;left:172px;top:106px" width="64" height="64" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27" fill="none" stroke="#fff" stroke-opacity=".12" stroke-width="7"/>
+    <circle cx="32" cy="32" r="27" fill="none" stroke="#3CE3A0" stroke-width="7" stroke-linecap="round" stroke-dasharray="170" stroke-dashoffset="42" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle" font-size="14" font-weight="800" fill="#F3F7FF">75%</text></svg>
+  <div class="t lbl" style="left:244px;top:118px;width:66px">Matching<br>registered<br>patient…</div>
+  <div class="t lbl" style="left:172px;top:184px;width:140px;color:var(--mut);font-size:8px">Photo is kept only as proof of intake for your PMO.</div>
+</section>
+
+<!-- 5 PPG -->
+<section class="scr" id="ppg">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span>Step 2 of 3</span><span style="color:var(--ok)">● finger detected</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:300px;height:96px"></div>
+  <img class="ico" src="ikon/jantung.png" style="left:16px;top:34px;width:92px">
+  <div class="chip" style="left:112px;top:42px">Heart rate</div>
+  <div class="t big" style="left:112px;top:56px;font-size:38px">78<span style="font-size:13px;font-weight:700;color:var(--ink2)"> bpm</span></div>
+  <svg style="position:absolute;left:112px;top:98px" width="190" height="26" viewBox="0 0 190 26">
+    <path d="M0 15 L38 15 L44 4 L50 24 L56 13 L62 15 L104 15 L110 4 L116 24 L122 13 L128 15 L170 15 L176 4 L182 24 L188 13" fill="none" stroke="#5FA2FF" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+  <div class="card" style="left:10px;top:136px;width:96px;height:94px"></div>
+  <img class="ico" src="ikon/tetes.png" style="left:68px;top:140px;width:34px">
+  <div class="chip" style="left:20px;top:144px">SpO₂</div>
+  <div class="t big" style="left:20px;top:162px;font-size:28px">98<span style="font-size:12px">%</span></div>
+  <div class="t lbl" style="left:20px;top:196px;color:var(--ok);font-weight:800">● normal</div>
+  <div class="card" style="left:112px;top:136px;width:96px;height:94px"></div>
+  <div class="chip" style="left:122px;top:144px">Blood press.*</div>
+  <div class="t big" style="left:122px;top:164px;font-size:22px">118<span style="font-size:13px;color:var(--ink2)">/76</span></div>
+  <div class="t lbl" style="left:122px;top:196px">mmHg · estimate</div>
+  <div class="card" style="left:214px;top:136px;width:96px;height:94px"></div>
+  <div class="chip" style="left:224px;top:144px">Glucose*</div>
+  <div class="t big" style="left:224px;top:164px;font-size:22px">105</div>
+  <div class="t lbl" style="left:224px;top:196px">mg/dL · estimate</div>
+</section>
+
+<!-- 6 DISPENSE -->
+<section class="scr" id="dispense">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span>Step 3 of 3</span><span>Dispensing</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:132px;height:198px"></div>
+  <div class="chip" style="left:22px;top:42px">Blister · row 2</div>
+  <div id="grid"></div>
+  <div class="chip" style="left:156px;top:44px">Dispensing</div>
+  <div class="t big" style="left:156px;top:60px;font-size:40px">2<span style="font-size:18px;color:var(--ink2)"> of 3</span></div>
+  <div class="t lbl" style="left:156px;top:106px;font-size:10px">Plunger pressing caplet…</div>
+  <div class="t" style="left:156px;top:126px;width:152px;height:8px;border-radius:4px;background:rgba(255,255,255,.12)"></div>
+  <div class="t" style="left:156px;top:126px;width:101px;height:8px;border-radius:4px;background:linear-gradient(90deg,#5FA2FF,#3CE3A0)"></div>
+  <img class="ico" src="ikon/pil.png" style="left:236px;top:150px;width:72px">
+  <div class="t lbl" style="left:156px;top:154px;width:80px">Collect from<br>the tray below ↓</div>
+  <div class="t lbl" style="left:156px;top:208px;color:var(--mut);font-size:8px">Please don't open the device.</div>
+</section>
+
+<!-- 7 DONE -->
+<section class="scr green" id="done">
+  <img class="ico" src="ikon/centang.png" style="left:118px;top:20px;width:84px">
+  <div class="t big" style="left:0;right:0;top:112px;text-align:center;font-size:22px">Dose complete</div>
+  <div class="t lbl" style="left:0;right:0;top:140px;text-align:center;font-size:10.5px;color:#CFFBEA">3 caplets taken · 07:04 · face verified</div>
+  <div class="card" style="left:40px;top:162px;width:240px;height:58px"></div>
+  <div class="t lbl" style="left:54px;top:172px;color:#CFFBEA">Sent to your PMO ✓</div>
+  <div class="t big" style="left:54px;top:188px;font-size:16px">Streak 12 days <span style="font-size:10px;color:#CFFBEA">· 133 to go</span></div>
+</section>
+
+<!-- 8 REFILL -->
+<section class="scr" id="refill">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span style="color:var(--warn)">● blister empty</span></div></div>
+  <img class="ico" src="ikon/wadah.png" style="left:16px;top:34px;width:96px">
+  <div class="chip" style="left:124px;top:44px">Refill · for PMO</div>
+  <div class="t h1" style="left:124px;top:58px;font-size:16px">Insert a new<br>blister holder</div>
+  <div class="row" style="left:124px;right:10px;top:104px"><span>1  Clip blister, domes front</span></div>
+  <div class="row" style="left:124px;right:10px;top:138px"><span>2  Slide into top slot</span></div>
+  <div class="row" style="left:124px;right:10px;top:172px"><span>3  Confirm 28 caplets</span></div>
+  <div class="btn" style="left:16px;top:196px;width:96px;height:32px">Start ›</div>
+</section>
+
+<!-- 9 MISSED -->
+<section class="scr red" id="missed">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div><div class="stat"><span>08:01</span></div></div>
+  <img class="ico" src="ikon/lonceng.png" style="left:20px;top:38px;width:92px">
+  <div class="chip" style="left:126px;top:46px;color:#FFC2CC">Dose missed</div>
+  <div class="t h1" style="left:126px;top:60px;font-size:17px">Your PMO has<br>been notified</div>
+  <div class="t lbl" style="left:126px;top:106px;width:184px;color:#FFD9DF">Morning dose not taken within 60 min. You can still take it now.</div>
+  <div class="btn" style="left:126px;top:150px;width:184px;height:38px;background:linear-gradient(135deg,#FF7A8E,#C3264A);box-shadow:0 6px 14px rgba(255,90,114,.5)">Take it now ›</div>
+  <div class="btn ghost" style="left:126px;top:196px;width:184px;height:30px;color:#FFD9DF">Call PMO</div>
+</section>
+
+<!-- 10 SETTINGS -->
+<section class="scr" id="settings">
+  <div class="top"><div class="brand">Settings</div><div class="stat"><span>v1.0</span></div></div>
+  <div class="row" style="top:32px"><span>Language</span><span style="color:var(--blue)">English · Bahasa</span></div>
+  <div class="row" style="top:66px"><span>Wi-Fi</span><span style="color:var(--ok)">● ARTA-Home</span></div>
+  <div class="row" style="top:100px"><span>Alarm volume</span><span class="tog"></span></div>
+  <div class="row" style="top:134px"><span>Calibrate plunger & holder</span><span style="color:var(--blue)">›</span></div>
+  <div class="row" style="top:168px"><span>Re-enroll face</span><span style="color:var(--blue)">›</span></div>
+  <div class="row" style="top:202px"><span>Device ID</span><span style="color:var(--mut)">dev-ARTAC-0071</span></div>
+</section>
+
+<script>
+  // grid blister 4x7: baris 1 kosong (sudah diminum), baris 2 sedang, sisanya penuh
+  const g = document.getElementById("grid");
+  for (let r = 0; r < 7; r++) for (let c = 0; c < 4; c++) {
+    const d = document.createElement("div"); d.className = "dot";
+    d.style.left = (26 + c * 28) + "px"; d.style.top = (204 - r * 22) + "px";
+    d.style.width = "20px"; d.style.height = "12px";
+    const row = r + 1;
+    d.style.background = row === 1 ? "rgba(255,255,255,.10)" :
+      row === 2 ? (c < 1 ? "rgba(255,255,255,.10)" : c === 1 ? "#3CE3A0" : "#FF5A72") : "#FF5A72";
+    if (row === 2 && c === 1) d.style.boxShadow = "0 0 10px #3CE3A0";
+    g.appendChild(d);
+  }
+  const s = location.hash.slice(1) || "home";
+  document.getElementById(s).classList.add("on");
+</script>
+</body>
+</html>

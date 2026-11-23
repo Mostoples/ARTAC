@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARTA-C Portable · No dose goes unseen</title>
+<meta name="description" content="ARTA-C Portable: a smart TB medication dispenser that presses each caplet out of the original blister, verifies the patient and reports every dose to the PMO.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9EFF7;--bg-2:#F3F6FB;--sd:#C6D2E3;--sl:#FFFFFF;
+    --ink:#16233F;--ink-2:#4A5A7A;--muted:#8392AE;
+    --blue:#2F7BFF;--deep:#1646D6;--sky:#8CC6FF;--ice:#DDEBFF;--ok:#19B97A;--warn:#F5A524;--red:#E8364E;
+    --raise:9px 9px 20px var(--sd),-9px -9px 20px var(--sl);
+    --aura:0 14px 40px rgba(47,123,255,.22),0 0 0 1px rgba(255,255,255,.9) inset;
+    --grad:linear-gradient(135deg,#2F7BFF,#1646D6);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:auto}
+  body{background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;overflow-x:hidden}
+  #stage{position:fixed;inset:0;z-index:0}
+  #stage canvas{display:block}
+  .aura{position:fixed;border-radius:50%;filter:blur(70px);z-index:-1;pointer-events:none}
+  .a1{width:60vw;height:60vw;right:-15vw;top:-20vw;background:radial-gradient(circle,#BFD9FF,transparent 65%)}
+  .a2{width:45vw;height:45vw;left:-15vw;bottom:-15vw;background:radial-gradient(circle,#D6E6FF,transparent 65%)}
+  nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:6px;padding:6px;border-radius:999px;
+      background:rgba(243,246,251,.72);backdrop-filter:blur(14px);box-shadow:var(--raise)}
+  nav a{font-size:13px;font-weight:700;color:var(--ink-2);text-decoration:none;padding:9px 16px;border-radius:999px;transition:.3s var(--ease)}
+  nav a.on,nav a:hover{background:var(--grad);color:#fff;box-shadow:0 8px 18px rgba(47,123,255,.35)}
+  .logo{position:fixed;top:24px;left:32px;z-index:20;font-weight:800;font-size:20px;letter-spacing:.01em}
+  .logo b{background:var(--grad);-webkit-background-clip:text;color:transparent}
+  .cta-top{position:fixed;top:20px;right:28px;z-index:20}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;background:var(--grad);color:#fff;
+       font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 10px 24px rgba(47,123,255,.35);border:0;cursor:pointer}
+  .btn.ghost{background:var(--bg-2);color:var(--ink);box-shadow:var(--raise)}
+  section.s{position:relative;z-index:5;min-height:100vh;display:flex;align-items:center;padding:0 7vw;pointer-events:none}
+  section.s .panel{pointer-events:auto}
+  .right{justify-content:flex-end}
+  .panel{max-width:440px;padding:34px 36px;border-radius:28px;background:linear-gradient(160deg,rgba(246,249,254,.86),rgba(233,239,247,.78));
+         backdrop-filter:blur(16px);box-shadow:var(--raise);opacity:0;transform:translateY(40px)}
+  .panel.hero{box-shadow:var(--aura)}
+  .chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--blue);text-transform:uppercase;
+        padding:7px 12px;border-radius:999px;background:var(--ice);margin-bottom:16px}
+  h1{font-size:clamp(46px,6.2vw,92px);font-weight:800;line-height:.98;letter-spacing:-.02em}
+  h2{font-size:clamp(30px,3.3vw,48px);font-weight:800;line-height:1.05;letter-spacing:-.015em}
+  .g{background:var(--grad);-webkit-background-clip:text;color:transparent}
+  p.d{font-size:16.5px;font-weight:500;color:var(--ink-2);line-height:1.6;margin-top:16px}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .pills span{font-size:12.5px;font-weight:700;padding:8px 13px;border-radius:999px;background:var(--bg-2);box-shadow:5px 5px 12px var(--sd),-5px -5px 12px var(--sl)}
+  .hero-wrap{max-width:620px}
+  .hero-wrap .panel{max-width:620px;background:none;box-shadow:none;backdrop-filter:none;padding:0}
+  .stat{display:flex;gap:28px;margin-top:28px}
+  .stat div{font-weight:800;font-size:34px;line-height:1}
+  .stat small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+  .note{font-size:11.5px;color:var(--muted);margin-top:12px}
+  /* label urai */
+  #labels{position:fixed;inset:0;pointer-events:none;z-index:6}
+  .lab{position:absolute;transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;
+       padding:6px 11px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 6px 16px rgba(47,123,255,.22);opacity:0}
+  .lab::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);margin-right:7px;vertical-align:1px}
+  /* galeri layar 3D */
+  .gal{position:relative;z-index:5;padding:14vh 0 18vh;perspective:1600px;overflow:hidden}
+  .gal h2,.gal .chip,.gal p{text-align:center;display:block;margin-left:auto;margin-right:auto}
+  .gal .chip{width:max-content}
+  .ring{position:relative;width:420px;height:315px;margin:90px auto 0;transform-style:preserve-3d}
+  .ring figure{position:absolute;inset:0;border-radius:22px;overflow:hidden;box-shadow:0 30px 60px rgba(22,70,214,.35);
+               border:6px solid #16233F;background:#16233F}
+  .ring img{width:100%;height:100%;display:block}
+  .ring figcaption{position:absolute;left:0;right:0;bottom:-34px;text-align:center;font-size:13px;font-weight:700;color:var(--ink-2)}
+  .specs{position:relative;z-index:5;padding:10vh 7vw 16vh;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .spec{padding:26px;border-radius:24px;background:linear-gradient(160deg,#F6F9FE,var(--bg));box-shadow:var(--raise);transform-style:preserve-3d;transition:transform .25s}
+  .spec img{width:64px;height:64px;filter:drop-shadow(0 10px 12px rgba(22,70,214,.25))}
+  .spec b{display:block;font-size:26px;font-weight:800;margin-top:12px}
+  .spec span{font-size:13px;font-weight:600;color:var(--ink-2)}
+  footer{position:relative;z-index:5;text-align:center;padding:0 7vw 12vh}
+  footer h2{margin-bottom:22px}
+  .loader{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--bg);transition:opacity .8s}
+  .loader div{font-weight:800;font-size:22px}
+  .loader i{display:block;width:180px;height:6px;border-radius:3px;background:var(--ice);margin-top:14px;overflow:hidden}
+  .loader i::after{content:"";display:block;height:100%;width:var(--p,10%);background:var(--grad);transition:width .3s}
+  @media (max-width:900px){.specs{grid-template-columns:1fr 1fr}nav{display:none}.panel{max-width:92vw}.ring{width:300px;height:225px}}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div>ARTA<span class="g">-C</span><i id="lbar"></i></div></div>
+<div class="aura a1"></div><div class="aura a2"></div>
+<div id="stage"></div>
+<div id="labels"></div>
+<div class="logo">ARTA<b>-C</b></div>
+<nav id="nav"><a href="#hero" class="on">Overview</a><a href="#load">Load</a><a href="#peck">Dispense</a><a href="#verify">Verify</a><a href="#inside">Inside</a><a href="#ui">Interface</a></nav>
+<div class="cta-top"><a class="btn" href="../app.html">Open the app →</a></div>
+
+<section class="s" id="hero"><div class="hero-wrap"><div class="panel hero">
+  <span class="chip">Smart TB medication dispenser</span>
+  <h1>No dose<br><span class="g">goes unseen.</span></h1>
+  <p class="d" style="max-width:500px">ARTA-C presses each caplet out of the original blister, checks that the right patient is taking it, and tells the treatment supervisor (PMO) the moment it happens.</p>
+  <div class="stat"><div>28<small>caplets per blister</small></div><div>3<small>servos, one plunger</small></div><div>180<small>days, every day</small></div></div>
+</div></div></section>
+
+<section class="s right" id="load"><div class="panel">
+  <span class="chip">01 · Load</span>
+  <h2>Like bread<br><span class="g">into a toaster.</span></h2>
+  <p class="d">The PMO clips the whole blister into a holder and drops it into the top slot. The medicine never leaves its foil until the moment it is taken.</p>
+  <div class="pills"><span>Original blister</span><span>Rack &amp; gear</span><span>Row by row</span></div>
+</div></section>
+
+<section class="s" id="peck"><div class="panel">
+  <span class="chip">02 · Dispense</span>
+  <h2>A plunger that<br><span class="g">pecks, not pours.</span></h2>
+  <p class="d">The holder lowers one row at a time. A carriage slides to the right column and a scotch-yoke plunger presses the dome until the caplet breaks through the foil and rolls into the tray.</p>
+  <div class="pills"><span>≥28 N push</span><span>4 columns × 7 rows</span><span>Exact dose</span></div>
+</div></section>
+
+<section class="s right" id="verify"><div class="panel">
+  <span class="chip">03 · Verify</span>
+  <h2>The right person,<br><span class="g">at the right time.</span></h2>
+  <p class="d">ESP32-CAM confirms the registered patient's face. A light-sealed finger tunnel with a MAX30102 PPG sensor reads heart rate and SpO₂, and the dose is logged to the ARTA-C cloud for the PMO and doctor.</p>
+  <div class="pills"><span>Face check</span><span>Heart rate · SpO₂</span><span>Live to PMO</span></div>
+  <p class="note">Blood pressure and glucose from PPG are experimental estimates, not a diagnosis.</p>
+</div></section>
+
+<section class="s" id="inside"><div class="panel">
+  <span class="chip">04 · Inside</span>
+  <h2>29 printed parts.<br><span class="g">One quiet machine.</span></h2>
+  <p class="d">Fully 3D-printed in PLA and PETG, 168 × 206 × 54 mm, rechargeable over USB-C, with a 2000 mAh battery for travel and power cuts.</p>
+  <div class="pills"><span>3× MG90S</span><span>ESP32 + LVGL</span><span>LiPo + USB-C</span></div>
+</div></section>
+
+<div class="gal" id="ui">
+  <span class="chip">05 · Interface</span>
+  <h2>A screen that <span class="g">explains itself.</span></h2>
+  <p class="d" style="max-width:560px">Ten screens built in LVGL for the 2.8" display, bilingual English and Bahasa Indonesia.</p>
+  <div class="ring" id="ring"></div>
+</div>
+
+<div class="specs" id="specs">
+  <div class="spec"><img src="ikon/blister.png" alt=""><b>28</b><span>caplets, original blister</span></div>
+  <div class="spec"><img src="ikon/wajah.png" alt=""><b>Face</b><span>verified before every dose</span></div>
+  <div class="spec"><img src="ikon/jantung.png" alt=""><b>PPG</b><span>heart rate &amp; SpO₂</span></div>
+  <div class="spec"><img src="ikon/baterai.png" alt=""><b>USB-C</b><span>rechargeable, 2000 mAh</span></div>
+</div>
+<footer><h2>Finish the treatment.<br><span class="g">Every single day.</span></h2>
+  <a class="btn" href="../app.html">Open the ARTA-C app →</a>&nbsp; <a class="btn ghost" href="#hero" id="top">Back to top</a></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.169.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.169.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+
+gsap.registerPlugin(ScrollTrigger);
+const M = await (await fetch("artac.json")).json();
+
+// ---------------- renderer & scene ----------------
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.05, 100);
+const key = new THREE.DirectionalLight(0xffffff, 2.2);
+key.position.set(-2.5, 4, 3.5); key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = key.shadow.camera.bottom = -3; key.shadow.camera.right = key.shadow.camera.top = 3; key.shadow.radius = 6;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x8cc6ff, 1.6); rim.position.set(3, 1.5, -3); scene.add(rim);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.16 }));
+ground.rotation.x = -Math.PI / 2; ground.position.y = -1.05; ground.receiveShadow = true; scene.add(ground);
+
+// model: mm, z ke atas -> three: y ke atas
+const root = new THREE.Group();
+root.rotation.x = -Math.PI / 2;
+root.scale.setScalar(0.01);
+root.position.set(-M.W / 2 * 0.01, -1.0, M.D / 2 * 0.01);
+const turn = new THREE.Group();          // diputar untuk orbit pameran
+turn.add(root); scene.add(turn);
+
+const nodes = {};
+const loader = new GLTFLoader();
+const gltf = await new Promise((res, rej) => loader.load("artac.glb", res,
+  e => document.getElementById("lbar").style.setProperty("--p", (e.total ? e.loaded / e.total * 100 : 50) + "%"), rej));
+root.add(gltf.scene);
+gltf.scene.traverse(o => {
+  if (o.isMesh) {
+    o.castShadow = true; o.receiveShadow = true;
+    o.material = o.material.clone();
+    if (o.name.startsWith("dinding")) o.material.transparent = true;
+  }
+  if (o.name) nodes[o.name] = o;
+});
+const byPrefix = p => Object.values(nodes).filter(o => o.isMesh && o.name.startsWith(p));
+const walls = byPrefix("dinding").concat(byPrefix("rangka_depan_extra"));
+const wadah = byPrefix("wadah_");
+const kereta = byPrefix("kereta_");
+const plunger = nodes["kereta_pelatuk"], crank = nodes["kereta_engkol"], lever = nodes["tuas"];
+const g1 = nodes["gear_G1"], g2 = nodes["gear_G2"];
+const screen = nodes["layar"];
+const caps = byPrefix("wadah_kaplet_");
+
+// tekstur layar
+const tl = new THREE.TextureLoader();
+const tex = {};
+for (const n of ["home", "alarm", "face", "ppg", "dispense", "done"]) {
+  tex[n] = tl.load(`${n}@3x.png`); tex[n].colorSpace = THREE.SRGBColorSpace; tex[n].flipY = false;
+}
+if (screen) { screen.material.side = THREE.DoubleSide; screen.material.emissive = new THREE.Color(1, 1, 1); screen.renderOrder = 2; }
+function showScreen(n) { if (screen && tex[n]) { screen.material.map = tex[n]; screen.material.emissiveMap = tex[n]; screen.material.needsUpdate = true; } }
+
+// ---------------- kinematika (mm, koordinat alat) ----------------
+const S = { wadahZ: M.CB_EJ - M.CB1, carX: 0, theta: 0, wall: 1, explode: 0, capDrop: 0, capCol: 0, spin: 0 };
+function rotAbout(o, axis, pivot, ang, extra = new THREE.Vector3()) {
+  const q = new THREE.Quaternion().setFromAxisAngle(axis, ang);
+  o.quaternion.copy(q);
+  const p = pivot.clone(); const rp = p.clone().applyQuaternion(q);
+  o.position.copy(p.sub(rp)).add(extra);
+}
+const EX = M.explode;
+function exKey(n) {
+  const map = { rangka_pemandu_kiri: "pemandu_kiri", rangka_pemandu_kanan: "pemandu_kanan", rangka_rel: "rel_kereta",
+    rangka_corong: "corong_baki", rangka_landasan: "landasan", rangka_braket_s1: "braket_servo1", rangka_braket_s2: "braket_servo2",
+    rangka_klem_a: "klem_layar", rangka_klem_b: "klem_layar", rangka_depan_extra: "dinding_depan", kantong_jari: "kantong_jari_ppg",
+    gear_G1: "gear_G1", gear_G2: "gear_G2", gear_spacer: "spacer_G2", tuas: "tuas_servo2", elek_servo1: "braket_servo1",
+    elek_servo2: "braket_servo2", elek_max30102: "kantong_jari_ppg", elek_max30102_sensor: "kantong_jari_ppg", layar: "dinding_depan",
+    wadah_depan: "wadah_depan", kereta_pelatuk: "pelatuk" };
+  if (map[n]) return map[n];
+  if (n.startsWith("dinding")) return n;
+  if (n.startsWith("rangka_blok")) return "blok_sudut";
+  if (n.startsWith("wadah_")) return "wadah_belakang";
+  if (n.startsWith("kereta_")) return "kereta";
+  if (n.startsWith("elek_")) return "dinding_depan";
+  return null;
+}
+const meshes = Object.values(nodes).filter(o => o.isMesh);
+function apply() {
+  const e = S.explode;
+  for (const o of meshes) { o.position.set(0, 0, 0); o.quaternion.identity(); }
+  const off = o => { const k = exKey(o.name); const v = k && EX[k]; return v ? new THREE.Vector3(v[0] * e, v[1] * e, v[2] * e) : new THREE.Vector3(); };
+  for (const o of meshes) o.position.copy(off(o));
+  // wadah turun
+  for (const o of wadah) o.position.z += S.wadahZ;
+  // roda gigi
+  const th2 = (M.CB_EJ - M.CB1 - S.wadahZ) / M.R2;
+  rotAbout(g2, new THREE.Vector3(0, 1, 0), new THREE.Vector3(M.G2[0], 0, M.G2[1]), th2, off(g2));
+  rotAbout(g1, new THREE.Vector3(0, 1, 0), new THREE.Vector3(M.G1[0], 0, M.G1[1]), -th2 * M.G1_RATIO, off(g1));
+  // kereta + tuas
+  for (const o of kereta) o.position.x += S.carX;
+  const phi = Math.asin(S.carX / M.LEVER_L);
+  rotAbout(lever, new THREE.Vector3(0, 1, 0), new THREE.Vector3(M.S2[0], 0, M.S2[1]), phi, off(lever));
+  const t = S.theta * Math.PI / 180;
+  rotAbout(crank, new THREE.Vector3(0, 0, 1), new THREE.Vector3(M.XC, M.Y_S3, 0), t, off(crank).add(new THREE.Vector3(S.carX, 0, 0)));
+  plunger.position.y += M.CRANK3 * (1 - Math.cos(t));
+  // kaplet keluar
+  caps.forEach(c => { c.visible = true; });
+  const cap = nodes[`wadah_kaplet_${S.capCol + 1}1`];
+  if (cap && S.capDrop > 0) {
+    const d = S.capDrop;
+    cap.position.y += Math.min(d, 0.35) / 0.35 * 14;
+    if (d > 0.35) cap.position.z -= Math.pow((d - 0.35) / 0.65, 2) * 120;
+    if (d >= 0.999) cap.visible = false;
+  }
+  for (const w of walls) { w.material.opacity = S.wall; w.material.depthWrite = S.wall > 0.6; w.visible = S.wall > 0.02; }
+}
+
+// ---------------- kamera per bagian ----------------
+const CAM = {
+  hero:   { p: [3.3, 1.9, 6.4], t: [-0.8, 0.55, 0], fov: 30 },
+  load:   { p: [-2.3, 1.9, 3.2], t: [0, 0.35, 0], fov: 30 },
+  peck:   { p: [0.9, 0.95, 2.05], t: [0.05, 0.62, 0], fov: 32 },
+  verify: { p: [-1.25, 0.15, 2.5], t: [-0.05, -0.35, 0.15], fov: 30 },
+  inside: { p: [4.6, 3.0, 6.4], t: [-0.6, 0.35, 0], fov: 34 },
+};
+const C = { p: new THREE.Vector3(...CAM.hero.p), t: new THREE.Vector3(...CAM.hero.t), fov: 30 };
+function camTo(name) { return { px: CAM[name].p[0], py: CAM[name].p[1], pz: CAM[name].p[2], tx: CAM[name].t[0], ty: CAM[name].t[1], tz: CAM[name].t[2], fov: CAM[name].fov }; }
+const CV = Object.assign({}, camTo("hero"));
+
+// ---------------- timeline scroll ----------------
+const tlx = gsap.timeline({ defaults: { ease: "power2.inOut" }, scrollTrigger: { trigger: "#hero", start: "top top", endTrigger: "#inside", end: "bottom bottom", scrub: 1.2 } });
+tlx.to(CV, { ...camTo("load"), duration: 1 }, 0)
+   .to(S, { wall: 0.18, duration: 0.5 }, 0.6)
+   .to(S, { wadahZ: 0, duration: 0.9 }, 0.9)
+   .add(() => {}, 1.8)
+   .to(CV, { ...camTo("peck"), duration: 1 }, 2)
+   .to(S, { carX: M.cols[1] - M.XC, duration: 0.5 }, 2.4)
+   .to(S, { theta: 180, duration: 0.6, ease: "sine.inOut" }, 2.95)
+   .to(S, { capCol: 1, duration: 0.001 }, 2.95)
+   .to(S, { capDrop: 1, duration: 0.7, ease: "none" }, 3.3)
+   .to(S, { theta: 0, duration: 0.4 }, 3.6)
+   .to(S, { wall: 1, duration: 0.5 }, 4.1)
+   .to(CV, { ...camTo("verify"), duration: 1 }, 4.1)
+   .to(CV, { ...camTo("inside"), duration: 1 }, 5.3)
+   .to(S, { explode: 1, wall: 1, duration: 1.1 }, 5.5);
+const SCREENS = [[0, "home"], [0.9, "alarm"], [2.1, "dispense"], [3.9, "done"], [4.4, "ppg"], [5.3, "home"]];
+let lastScreen = "";
+function screenAt(t) { let s = "home"; for (const [k, n] of SCREENS) if (t >= k) s = n; if (s !== lastScreen) { showScreen(s); lastScreen = s; } }
+
+// panel muncul
+document.querySelectorAll(".panel").forEach(p => {
+  gsap.to(p, { opacity: 1, y: 0, duration: 1, ease: "expo.out", scrollTrigger: { trigger: p, start: "top 78%", toggleActions: "play none none reverse" } });
+});
+// nav aktif
+const navs = [...document.querySelectorAll("#nav a")];
+["hero", "load", "peck", "verify", "inside", "ui"].forEach((id, i) => {
+  ScrollTrigger.create({ trigger: "#" + id, start: "top center", end: "bottom center", onToggle: s => s.isActive && navs.forEach((a, j) => a.classList.toggle("on", i === j)) });
+});
+navs.forEach(a => a.addEventListener("click", e => { e.preventDefault(); document.querySelector(a.getAttribute("href")).scrollIntoView({ behavior: "smooth" }); }));
+document.getElementById("top").addEventListener("click", e => { e.preventDefault(); scrollTo({ top: 0, behavior: "smooth" }); });
+// model memudar saat galeri
+gsap.to("#stage", { opacity: 0, scrollTrigger: { trigger: "#ui", start: "top 85%", end: "top 30%", scrub: true } });
+
+// ---------------- label urai ----------------
+const LAB = [["dinding_depan", "Front wall · screen & sensors"], ["wadah_belakang", "Blister holder + rack"], ["kereta_badan", "Plunger carriage"],
+  ["gear_G2", "Gear train (servo 1)"], ["kantong_jari", "PPG finger tunnel"], ["rangka_landasan", "Anvil"], ["rangka_corong", "Chute & tray"],
+  ["tuas", "Lever (servo 2)"], ["elek_esp32cam", "ESP32-CAM"], ["dinding_atas", "Top slot"]];
+const labBox = document.getElementById("labels");
+const labs = LAB.map(([n, t]) => { const d = document.createElement("div"); d.className = "lab"; d.textContent = t; labBox.appendChild(d); return [nodes[n], d]; });
+const box3 = new THREE.Box3(), v3 = new THREE.Vector3();
+
+// ---------------- galeri layar 3D ----------------
+const shots = [["home", "Home"], ["alarm", "Alarm"], ["face", "Face check"], ["ppg", "PPG check"], ["dispense", "Dispensing"],
+  ["done", "Dose complete"], ["refill", "Refill"], ["missed", "Missed dose"], ["settings", "Settings"], ["boot", "Boot"]];
+const ring = document.getElementById("ring");
+shots.forEach(([f, c], i) => {
+  const fig = document.createElement("figure");
+  fig.innerHTML = `<img src="${f}@3x.png" alt="${c}"><figcaption>${c}</figcaption>`;
+  fig.style.transform = `rotateY(${i * 36}deg) translateZ(720px)`;
+  ring.appendChild(fig);
+});
+gsap.fromTo(ring, { rotateY: 20 }, { rotateY: -340, ease: "none", scrollTrigger: { trigger: "#ui", start: "top bottom", end: "bottom top", scrub: 1 } });
+// kartu spesifikasi miring 3D
+document.querySelectorAll(".spec").forEach(c => {
+  c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    c.style.transform = `perspective(700px) rotateY(${x * 14}deg) rotateX(${-y * 14}deg) translateZ(8px)`; });
+  c.addEventListener("pointerleave", () => c.style.transform = "");
+});
+
+// ---------------- render loop ----------------
+let mx = 0, my = 0;
+addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
+addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+const clock = new THREE.Clock();
+function frame() {
+  const dt = clock.getDelta();
+  const prog = tlx.time();
+  screenAt(prog);
+  apply();
+  const idle = prog < 0.05 ? 1 : 0;
+  S.spin += dt * 0.25 * idle;
+  turn.rotation.y = idle ? Math.sin(S.spin) * 0.35 : turn.rotation.y * 0.94;
+  C.p.lerp(new THREE.Vector3(CV.px + mx * 0.25, CV.py - my * 0.15, CV.pz), 0.12);
+  C.t.lerp(new THREE.Vector3(CV.tx, CV.ty, CV.tz), 0.12);
+  camera.position.copy(C.p); camera.lookAt(C.t); camera.fov += (CV.fov - camera.fov) * 0.1; camera.updateProjectionMatrix();
+  // label
+  const lo = Math.max(0, Math.min(1, (S.explode - 0.6) / 0.4));
+  for (const [o, d] of labs) {
+    if (!o) continue;
+    box3.setFromObject(o).getCenter(v3); v3.project(camera);
+    d.style.left = ((v3.x + 1) / 2 * innerWidth) + "px"; d.style.top = ((1 - v3.y) / 2 * innerHeight) + "px";
+    d.style.opacity = lo * (parseFloat(getComputedStyle(stage).opacity) || 0);
+  }
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+showScreen("home");
+frame();
+document.getElementById("loader").style.opacity = 0;
+setTimeout(() => document.getElementById("loader").remove(), 900);
+window.SHOWCASE = { S, CV, camTo, tlx };
+</script>
+</body>
+</html>

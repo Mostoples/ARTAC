@@ -1,0 +1,8 @@
+C:\Users\mosto\Desktop\ARTAC\hardware\dispenser-portable\video_teknik.py:125: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  w = bpy.data.worlds.new("w"); sc.world = w; w.use_nodes = True
+C:\Users\mosto\Desktop\ARTAC\hardware\dispenser-portable\video_teknik.py:132: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m = bpy.data.materials.new(o["name"]); m.use_nodes = True
+C:\Users\mosto\Desktop\ARTAC\hardware\dispenser-portable\video_teknik.py:147: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  pm = bpy.data.materials.new("lantai"); pm.use_nodes = True
+video: C:\Users\mosto\Desktop\ARTAC\hardware\dispenser-portable\animasi\ARTA-C_rancangan_teknik_exploded.mp4
+selesai

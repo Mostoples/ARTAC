@@ -16,6 +16,16 @@ tools/package.json
 tools/package-lock.json
 tools/fonts.conf
 
+# ── ARTA-C render intermediates & large media (film ada di GitHub Release) ──
+__pycache__/
+hardware/**/_anim_tmp/
+hardware/**/_vt_tmp/
+hardware/**/_gt_tmp/
+film/_frames/
+film/_qa/
+film/*.mp4
+film/audio/*.wav
+
 # ── Firebase cache ────────────────────────────────────────────────
 .firebase/
 

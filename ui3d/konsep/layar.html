@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ARTA-C device UI concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:320px;height:240px;overflow:hidden;font-family:"Plus Jakarta Sans","Segoe UI",sans-serif}
+  .scr{position:relative;width:320px;height:240px;overflow:hidden;display:none}
+  .on{display:block}
+  /* ---------- Konsep A: neumorph terang (AQUENT) ---------- */
+  .A{--bg:#E9EFF7;--card:linear-gradient(160deg,#F7FAFF,#E6EDF7);--ink:#16233F;--ink2:#4A5A7A;--mut:#8392AE;
+     --blue:#2F7BFF;--deep:#1646D6;--ok:#19B97A;--warn:#F5A524;--red:#E8364E;
+     --raise:4px 4px 10px #C6D2E3,-4px -4px 10px #FFFFFF;--aura:0 8px 22px rgba(47,123,255,.28);
+     background:radial-gradient(120% 90% at 85% 0%,#DDEBFF 0%,#E9EFF7 55%);color:var(--ink)}
+  /* ---------- Konsep B: kaca biru tua berkedalaman ---------- */
+  .B{--bg:#0B1E4A;--card:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));--ink:#F3F7FF;--ink2:#BFD3FF;
+     --mut:#86A2D6;--blue:#5FA2FF;--deep:#2F7BFF;--ok:#3CE3A0;--warn:#FFC24D;--red:#FF5A72;
+     --raise:0 6px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.25);--aura:0 0 0 1px rgba(140,198,255,.35),0 10px 26px rgba(47,123,255,.45);
+     background:radial-gradient(110% 90% at 80% -10%,#2F7BFF 0%,#1646D6 28%,#0B1E4A 70%);color:var(--ink)}
+  .B .card{backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.14)}
+  .card{position:absolute;border-radius:14px;background:var(--card);box-shadow:var(--raise)}
+  .hero{box-shadow:var(--aura)}
+  .chip{position:absolute;font-size:8.5px;font-weight:700;letter-spacing:.08em;color:var(--blue);text-transform:uppercase}
+  .top{position:absolute;left:12px;top:8px;right:12px;height:18px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:800;font-size:12px;letter-spacing:.02em}
+  .brand b{background:linear-gradient(135deg,var(--blue),var(--deep));-webkit-background-clip:text;color:transparent}
+  .stat{display:flex;gap:8px;font-size:9px;font-weight:700;color:var(--ink2);align-items:center}
+  .stat img{width:13px;height:13px;vertical-align:-3px;margin-right:2px}
+  .big{font-weight:800;line-height:1}
+  .lbl{font-size:9px;font-weight:600;color:var(--ink2)}
+  .ico{position:absolute;filter:drop-shadow(0 6px 8px rgba(22,70,214,.28))}
+  .btn{position:absolute;border-radius:999px;background:linear-gradient(135deg,#2F7BFF,#1646D6);color:#fff;font-weight:800;
+       font-size:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(47,123,255,.45)}
+  svg text{font-family:"Plus Jakarta Sans",sans-serif}
+</style>
+</head>
+<body>
+<!-- ================= BERANDA ================= -->
+<section class="scr" id="home">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div>
+    <div class="stat"><span><img src="../ikon/termometer.png">27°C</span><span>58%</span><span><img src="../ikon/baterai.png">86%</span><span>06:52</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:170px;height:198px"></div>
+  <div class="chip" style="left:22px;top:42px">Next dose</div>
+  <svg style="position:absolute;left:24px;top:56px" width="142" height="142" viewBox="0 0 142 142">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--deep)"/></linearGradient></defs>
+    <circle cx="71" cy="71" r="60" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="11"/>
+    <circle cx="71" cy="71" r="60" fill="none" stroke="url(#g)" stroke-width="11" stroke-linecap="round"
+            stroke-dasharray="377" stroke-dashoffset="99" transform="rotate(-90 71 71)"/>
+    <text x="71" y="70" text-anchor="middle" font-size="30" font-weight="800" fill="currentColor">07:00</text>
+    <text x="71" y="90" text-anchor="middle" font-size="10" font-weight="600" fill="var(--ink2)">in 8 minutes</text>
+  </svg>
+  <img class="ico" src="../ikon/pil.png" style="left:118px;top:150px;width:58px">
+  <div class="lbl" style="position:absolute;left:22px;top:206px"><b style="color:var(--ink)">3 caplets</b> · 4FDC</div>
+  <div class="card" style="left:188px;top:32px;width:122px;height:62px"></div>
+  <div class="chip" style="left:198px;top:40px">Treatment</div>
+  <div class="big" style="position:absolute;left:198px;top:54px;font-size:22px">Day 47</div>
+  <div class="lbl" style="position:absolute;left:198px;top:79px">of 180 · 26% done</div>
+  <div class="card" style="left:188px;top:100px;width:122px;height:62px"></div>
+  <img class="ico" src="../ikon/blister.png" style="left:248px;top:106px;width:58px">
+  <div class="chip" style="left:198px;top:108px">Blister</div>
+  <div class="big" style="position:absolute;left:198px;top:122px;font-size:22px">19</div>
+  <div class="lbl" style="position:absolute;left:198px;top:146px">left of 28</div>
+  <div class="card" style="left:188px;top:168px;width:122px;height:62px"></div>
+  <img class="ico" src="../ikon/centang.png" style="left:258px;top:176px;width:44px">
+  <div class="chip" style="left:198px;top:176px;color:var(--ok)">This week</div>
+  <div class="big" style="position:absolute;left:198px;top:190px;font-size:22px">7/7</div>
+  <div class="lbl" style="position:absolute;left:198px;top:214px">doses taken</div>
+</section>
+
+<!-- ================= CEK PPG ================= -->
+<section class="scr" id="ppg">
+  <div class="top"><div class="brand">ARTA<b>-C</b></div>
+    <div class="stat"><span>PPG check</span><span style="color:var(--ok)">● finger detected</span></div></div>
+  <div class="card hero" style="left:10px;top:32px;width:300px;height:96px"></div>
+  <img class="ico" src="../ikon/jantung.png" style="left:16px;top:34px;width:92px">
+  <div class="chip" style="left:112px;top:42px">Heart rate</div>
+  <div class="big" style="position:absolute;left:112px;top:56px;font-size:38px">78<span style="font-size:13px;font-weight:700;color:var(--ink2)"> bpm</span></div>
+  <svg style="position:absolute;left:112px;top:98px" width="190" height="26" viewBox="0 0 190 26">
+    <path d="M0 15 L30 15 L38 15 L44 4 L50 24 L56 13 L62 15 L96 15 L104 15 L110 4 L116 24 L122 13 L128 15 L162 15 L170 15 L176 4 L182 24 L188 13"
+          fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>
+  <div class="card" style="left:10px;top:136px;width:96px;height:94px"></div>
+  <img class="ico" src="../ikon/tetes.png" style="left:68px;top:140px;width:34px">
+  <div class="chip" style="left:20px;top:144px">SpO₂</div>
+  <div class="big" style="position:absolute;left:20px;top:162px;font-size:28px">98<span style="font-size:12px">%</span></div>
+  <div class="lbl" style="position:absolute;left:20px;top:196px;color:var(--ok);font-weight:800">● normal</div>
+  <div class="card" style="left:112px;top:136px;width:96px;height:94px"></div>
+  <div class="chip" style="left:122px;top:144px">Blood press.*</div>
+  <div class="big" style="position:absolute;left:122px;top:164px;font-size:22px">118<span style="font-size:13px;color:var(--ink2)">/76</span></div>
+  <div class="lbl" style="position:absolute;left:122px;top:196px">mmHg · estimate</div>
+  <div class="card" style="left:214px;top:136px;width:96px;height:94px"></div>
+  <div class="chip" style="left:224px;top:144px">Glucose*</div>
+  <div class="big" style="position:absolute;left:224px;top:164px;font-size:22px">105</div>
+  <div class="lbl" style="position:absolute;left:224px;top:196px">mg/dL · estimate</div>
+  <div class="lbl" style="position:absolute;left:12px;top:232px;font-size:6.5px;color:var(--mut)"></div>
+</section>
+<script>
+  const [c, s] = (location.hash.slice(1) || "A-home").split("-");
+  document.body.classList.add(c);
+  document.getElementById(s).classList.add("on", c);
+</script>
+</body>
+</html>

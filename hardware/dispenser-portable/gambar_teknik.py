@@ -16,7 +16,7 @@ TMP = os.path.join(HERE, "_gt_tmp")
 OUTD = os.path.join(HERE, "gambar_teknik")
 BLENDER = r"C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 PPM = 8.0                                   # piksel per mm pada render pandangan
-DATE = "2026-10-23"
+DATE = "2026-11-24"
 
 # nama, fungsi, jumlah, bahan
 INFO = {
@@ -53,18 +53,18 @@ DETAIL = {   # data rinci yang dicantumkan di catatan gambar
                 "Lubang spline servo MG90S Ø4,7 (tekan)"],
     "gear_G2": ["Roda gigi majemuk: z36 (d pitch 36,0, d luar 38,0, lebar 5,0)", "+ z12 (d pitch 12,0, d luar 14,0)",
                 "Lubang poros Ø3,4 untuk baut M3", "Rasio total servo 1 ke rack: 60 mm/rad"],
-    "wadah_belakang": ["Jarak kantong blister: 24,0 (horizontal) x 20,5 (vertikal), 4 x 7", "Lubang kaplet 23,0 x 12,5 R2",
-                       "Rack vertikal m = 1 di sisi kiri, panjang 150", "Pegangan 40 x 9 R4,4"],
-    "wadah_depan": ["Jendela kubah 23,5 x 13,0 R2, jarak 24,0 x 20,5", "6 lubang M2 ke wadah belakang"],
+    "wadah_belakang": ["Blister 104 x 180; kantong 4 x 7, jarak pusat 22,35 (h) x 21,85 (v)", "Lubang kaplet 23,0 x 13,0 miring 45 deg",
+                       "Rack vertikal m = 1 di sisi kiri, panjang 180", "Pegangan 40 x 9 R4,4"],
+    "wadah_depan": ["Jendela kubah 23,5 x 13,5 miring 45 deg, jarak pusat 22,35 x 21,85", "6 lubang M2 ke wadah belakang"],
     "kantong_jari_ppg": ["Lubang jari Ø19 x 35 dalam, bibir masuk Ø24", "Jendela sensor 6 x 8 di lantai, 2-10 mm dari ujung lubang (bantalan ujung jari)",
                          "Kantong papan MAX30102 16 x 16, terbuka ke bawah", "4 baut M3 + mur ke dinding depan; cetak PLA hitam"],
-    "pelatuk": ["Bantalan dorong 14 x 7", "Slot yoke 16,2 x 3,5 untuk pin engkol Ø3"],
+    "pelatuk": ["Bantalan dorong 16,5 x 7 miring 45 deg (sejajar kaplet)", "Slot yoke 16,2 x 3,5 untuk pin engkol Ø3"],
     "engkol_servo3": ["Radius engkol 6,3 (langkah pelatuk 12,6)", "Pin Ø3,0; lubang spline MG90S Ø4,7"],
-    "tuas_servo2": ["Panjang lengan 113 (sumbu servo ke pin)", "Pin Ø3,0 masuk slot kereta"],
+    "tuas_servo2": ["Panjang lengan 133 (sumbu servo ke pin)", "Pin Ø3,0 masuk slot kereta"],
     "dinding_kiri": ["Lubang port USB-C 10,0 x 4,6", "Lubang saklar Ø6,2"],
     "dinding_depan": ["Jendela layar 60 x 46; lensa kamera Ø9; 5 lubang buzzer Ø2",
                       "Ventilasi DHT11 5 x (1,6 x 10); bukaan baki 30 x 22"],
-    "dinding_atas": ["Celah wadah 117,2 x 6,6"],
+    "dinding_atas": ["Celah wadah 118,2 x 6,6"],
 }
 
 
@@ -333,7 +333,7 @@ def assembly_sheet(meta_all, files, no, total, b):
     hi = [max(meta_all[k]["bounds"][1][i] for k in shell) for i in range(3)]
     X, Y, Z = (hi[i] - lo[i] for i in range(3))
     s, m = 0.5, 6.0
-    fig, ax = sheet("GAMBAR RAKITAN (ASSEMBLY)", no, total, "1 : 2", "PLA / PETG", "± 555 g filamen")
+    fig, ax = sheet("GAMBAR RAKITAN (ASSEMBLY)", no, total, "1 : 2", "PLA / PETG", "± 595 g filamen")
     fx, fz = 25, 285 - 20 - (Z + 2 * m) * s
     place(ax, files["depan"], fx, fz, X + 2 * m, Z + 2 * m, s)
     tx, tz = fx, fz - 14 - (Y + 2 * m) * s

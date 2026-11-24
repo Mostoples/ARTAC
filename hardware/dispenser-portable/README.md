@@ -6,13 +6,13 @@
 
 ![Wadah dimasukkan](render/03_wadah_dimasukkan_seperti_roti.png)
 
-Ukuran luar **168 × 206 × 54 mm** (lebar × tinggi × tebal). Perangkat berdiri tegak dan **seluruh bagiannya dicetak 3D**.
+Ukuran luar **168 × 226 × 54 mm** (lebar × tinggi × tebal). Perangkat berdiri tegak dan **seluruh bagiannya dicetak 3D**.
 
 ## Konsep
 
 1. **Blister obat tetap utuh di bungkusnya.** PMO menjepit blister di dalam **wadah** (`19_wadah_belakang` + `20_wadah_depan`).
 2. Wadah dimasukkan ke **celah di atas**. Mula-mula wadah menyembul seperti roti di pemanggang.
-3. **Servo 1** memutar roda gigi G1 → G2 yang menggigit rack di sisi wadah. Wadah turun **perlahan, satu baris per langkah** (jarak baris 20,5 mm).
+3. **Servo 1** memutar roda gigi G1 → G2 yang menggigit rack di sisi wadah. Wadah turun **perlahan, satu baris per langkah** (jarak baris 21,85 mm).
 4. **Servo 2** mengayun tuas panjang di bawah, sehingga **kereta pelatuk bergerak kiri–kanan** ke kolom 1–4.
 5. **Servo 3** di kereta memutar engkol (mekanisme scotch-yoke). Pelatuk **mematuk perlahan** menekan kubah sampai kaplet tembus foil ke belakang.
    Landasan di belakang wadah menahan tekanan itu dan menyisakan celah untuk kaplet keluar.
@@ -39,11 +39,11 @@ Pelatuk bisa menjangkau ke-28 kantong. Jumlah kaplet per hari (2–5) diatur di 
 
 | # | Part | Catatan |
 |---|---|---|
-| 01 | dinding depan/belakang/atas/bawah/kiri/kanan | Tebal 3 mm, lubang sekrup ber-countersink. Dinding depan sudah termasuk dudukan layar, kantong LiPo, kantong IP5306, kantong ESP32-CAM, cincin buzzer, lubang kabel & baut kantong jari PPG, dan ventilasi DHT11. Dinding kiri punya lubang port USB-C dan saklar. Butuh bed minimal **170 × 210 mm**. |
+| 01 | dinding depan/belakang/atas/bawah/kiri/kanan | Tebal 3 mm, lubang sekrup ber-countersink. Dinding depan sudah termasuk dudukan layar, kantong LiPo, kantong IP5306, kantong ESP32-CAM, cincin buzzer, lubang kabel & baut kantong jari PPG, dan ventilasi DHT11. Dinding kiri punya lubang port USB-C dan saklar. Untuk **Bambu Lab A1 mini** (bed 180 mm), dinding depan, belakang, kiri, dan kanan dicetak **dua belahan** (`_A_bawah` + `_B_atas`, sambungan ekor burung + lem). Wadah belakang juga dibelah. |
 | 02 | blok_sudut BL/BR/TL/TR | Pengikat dinding (sekrup M3) |
 | 03 | rel_kereta | Rel kereta pelatuk |
-| 04–06 | kereta, pelatuk, engkol_servo3 | Kereta + bantalan pelatuk 14×7 mm |
-| 07 | tuas_servo2 | Tuas 113 mm, pin masuk slot di bawah kereta |
+| 04–06 | kereta, pelatuk, engkol_servo3 | Kereta + bantalan pelatuk 16,5×7 mm miring 45° |
+| 07 | tuas_servo2 | Tuas 133 mm, pin masuk garpu di bawah kereta |
 | 08–09 | braket_servo2, braket_servo1 | |
 | 10–12 | gear G1 40T, gear G2 36T/12T, spacer G2 | Modul 1. **PETG** lebih awet. G2 berputar pada baut M3 dari dinding belakang. |
 | 13–14 | pemandu_kiri, pemandu_kanan | Jalur naik-turun wadah |
@@ -53,7 +53,7 @@ Pelatuk bisa menjangkau ke-28 kantong. Jumlah kaplet per hari (2–5) diatur di 
 | 19–20 | wadah_belakang, wadah_depan | **Wadah obat PMO.** Cetak 2 set supaya bisa bergantian. |
 | 21 | kantong_jari_ppg | Terowongan jari Ø19 × 35 mm + kantong papan MAX30102. Cetak **PLA hitam** supaya kedap cahaya. Dibaut 4× M3 + mur ke dinding depan. |
 
-Total sekitar **555 g filamen** (1 rol 1 kg cukup). **Cara mencetak: lihat [PANDUAN_CETAK.md](PANDUAN_CETAK.md).** `python build.py` mencetak berat per part dan mengecek tabrakan di semua posisi gerak (hasil terakhir: aman).
+Total sekitar **595 g filamen** (1 rol 1 kg cukup). **Cara mencetak: lihat [PANDUAN_CETAK.md](PANDUAN_CETAK.md). Cara merakit: lihat [PANDUAN_RAKIT.md](PANDUAN_RAKIT.md).** `python build.py` mencetak berat per part dan mengecek tabrakan di semua posisi gerak (hasil terakhir: aman).
 
 ## Elektronik
 
@@ -83,8 +83,8 @@ Alasan pembagian ini: CYD hanya punya 2 GPIO bebas yang aman (22 dan 27), jadi k
 
 | Servo | Posisi |
 |---|---|
-| Servo 1 (wadah) | 0° = masuk/keluar wadah; baris 1 ≈ 17°, lalu **+19,6° per baris**; baris 7 ≈ 135° |
-| Servo 2 (tuas) | tengah = 90°; kolom 1 = −18,6°, kolom 2 = −6,1°, kolom 3 = +6,1°, kolom 4 = +18,6° (relatif dari tengah) |
+| Servo 1 (wadah) | 0° = masuk/keluar wadah; baris 1 ≈ 27,6°, lalu **+20,9° per baris**; baris 7 ≈ 152,8° |
+| Servo 2 (tuas) | tengah = 90°; kolom 1 = −14,6°, kolom 2 = −4,8°, kolom 3 = +4,8°, kolom 4 = +14,6° (relatif dari tengah) |
 | Servo 3 (pelatuk) | 0° = naik, 180° = tembus. Gerakkan pelan (±1°/15 ms), tahan 0,5 detik, lalu kembali ke 0°. |
 
 Urutan satu dosis:
@@ -103,7 +103,9 @@ Simpan posisi baris dan kolom di NVS supaya tidak hilang saat mati daya. Sediaka
 
 Parameter ada di bagian atas `build.py`:
 
-- Blister: `BL_W, BL_H` (dipakai 100 × 150), jarak kantong `PX, PZ` (24 × 20,5), ukuran kantong `POC_X, POC_Z`, tinggi kubah `DOME_H` (8)
+- Blister (ukuran terukur, Nov 2026): `BL_W, BL_H` = 104 × 180 mm, 4 kolom × 7 baris; kaplet `CAP_L × CAP_W × CAP_T` = 20,5 × 10,5 × 6,5 mm,
+  **miring `TILT` = 45°** (semua sejajar); celah tepi-ke-tepi `GAP_X` 7,5 mm (horizontal) dan `GAP_Z` 7 mm (vertikal)
+  → jarak pusat `PX, PZ` = 22,35 × 21,85 mm (dihitung otomatis). Tinggi alat +20 mm (`DZ`) agar baris ke-7 tetap muat.
 - Kaplet: `CAP_L, CAP_W, CAP_T`
 - Ukuran MG90S (`SB_*`) dan posisi area aktif LCD (`ACT_FROM_USB`)
 - Posisi port USB-C modul IP5306 di dinding kiri (`USBC`), posisi lensa ESP32-CAM (`CAM`, `CAM_LENS`): cocokkan dengan modul yang dibeli

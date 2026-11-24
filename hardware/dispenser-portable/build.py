@@ -20,14 +20,20 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 
 # ============================================================== PARAMETER
 A = 3.0                                    # tebal dinding cetak
-W, D, H = 162.0, 48.0, 200.0               # ruang dalam
-XC = 100.0                                 # sumbu tengah blister (x)
+DZ = 20.0                                  # +20 mm tinggi untuk blister 180 mm (mekanisme atas ikut naik)
+W, D, H = 162.0, 48.0, 200.0 + DZ          # ruang dalam
+XC = 100.5                                 # sumbu tengah blister (x); +0.5 agar rack/servo1 tetap di x lama
 
-# --- blister (UKUR ULANG): 4 kolom x 7 baris, kaplet rebah memanjang searah x
-BL_W, BL_H = 100.0, 150.0
-NC, NR, PX, PZ = 4, 7, 24.0, 20.5
-POC_X, POC_Z, DOME_H = 22.0, 11.5, 8.0
-CAP_L, CAP_W, CAP_T = 21.0, 10.0, 7.5
+# --- blister (ukuran user 2026-11): 104 x 180 mm, 4 kolom x 7 baris, kaplet MIRING 45 deg (semua sejajar)
+#     celah tepi-ke-tepi antar kaplet: horizontal 7.5 mm, vertikal 7.0 mm (diukur pada garis lewat pusat)
+BL_W, BL_H = 104.0, 180.0
+CAP_L, CAP_W, CAP_T = 20.5, 10.5, 6.5
+TILT = 45.0                                # sudut sumbu panjang kaplet terhadap horizontal
+GAP_X, GAP_Z = 7.5, 7.0
+NC, NR = 4, 7
+PX = CAP_W / math.sin(math.radians(TILT)) + GAP_X          # 22.35 mm pusat-ke-pusat
+PZ = CAP_W / math.cos(math.radians(TILT)) + GAP_Z          # 21.85 mm
+POC_X, POC_Z, DOME_H = CAP_L + 1.5, CAP_W + 1.5, 7.5        # kantong (dalam bingkai kaplet, sebelum dimiringkan)
 BL_MZ = (BL_H - NR * PZ) / 2
 
 # --- lapisan y
@@ -40,17 +46,17 @@ DOME_TIP = BASE_Y[0] - DOME_H
 CAR_Y = (FR_Y[0], BP_Y[1])
 
 # --- wadah (carrier)
-CAR_X = (XC - BL_W / 2 - 8.0, XC + BL_W / 2 + 8.0)
+CAR_X = (XC - BL_W / 2 - 6.5, XC + BL_W / 2 + 6.5)   # rel samping 6 mm + celah 0.5 mm
 CAR_BOT, CAR_TOP = 7.0, 16.0
 CAR_H = BL_H + CAR_BOT + CAR_TOP
-Z_P = 168.0                                # garis pelatuk (tinggi pusat baris aktif)
+Z_P = 168.0 + DZ                           # garis pelatuk (tinggi pusat baris aktif)
 
 
 def cb_at(k):                              # z dasar wadah saat baris ke-k di garis pelatuk
     return Z_P - CAR_BOT - BL_MZ - (k - 0.5) * PZ
 
 
-CB_EJ = 165.5                              # posisi masuk/keluar (wadah menyembul di atas)
+CB_EJ = 165.5 + DZ                         # posisi masuk/keluar (wadah menyembul di atas)
 
 
 def pocket_xz(c, r, cb):                   # pusat kantong kolom c (1..4), baris r (1..7)
@@ -61,7 +67,7 @@ def pocket_xz(c, r, cb):                   # pusat kantong kolom c (1..4), baris
 X_R = CAR_X[0] - 1.25                      # garis pitch rack
 RACK_Y = (CAR_Y[0] + 0.5, CAR_Y[1] - 0.5)
 G1_T, G2S_T, G2B_T = 40, 12, 36
-G2 = (X_R - G2B_T / 2, 176.0)
+G2 = (X_R - G2B_T / 2, 176.0 + DZ)
 G1 = (G2[0], G2[1] - (G1_T + G2S_T) / 2)
 GF_Y = (CAR_Y[0] - 5.9, CAR_Y[0] - 0.9)   # lapisan depan (G1 + G2 kecil)
 MM_PER_RAD_1 = (G1_T / G2S_T) * (G2B_T / 2)
@@ -76,7 +82,7 @@ S1_CB = S1_CT + SB_H
 S2 = (XC, 14.0)                            # poros (x, z)
 LEVER_Y = (13.6, 16.6)
 S2_CT = LEVER_Y[1] + 0.9
-LEVER_L = 113.0
+LEVER_L = 113.0 + DZ
 
 # --- servo 3 di kereta: scotch-yoke, pelatuk mendorong arah +y
 CRANK3 = 6.3                               # langkah 12.6 mm
@@ -115,10 +121,17 @@ def holes_y(pts, depth, front=True, back=True, r=PILOT / 2):
     return out
 
 
-def rbox_xz(cx, cz, w, h, y0, y1, r=2.0):
-    """Kotak bersudut bulat (bidang x-z), diekstrusi sepanjang y."""
+def rbox_xz(cx, cz, w, h, y0, y1, r=2.0, ang=0.0):
+    """Kotak bersudut bulat (bidang x-z), diekstrusi sepanjang y; ang = putar di bidang x-z (deg, +x ke +z)."""
     cs = CrossSection.square([w - 2 * r, h - 2 * r], True).offset(r, circular_segments=24)
+    if ang:
+        cs = cs.rotate(ang)
     return cs.extrude(y1 - y0).rotate([90, 0, 0]).translate([cx, y1, cz])
+
+
+def pocket(x, z, grow, y0, y1, r=4.5):
+    """Kantong/lubang kaplet miring (TILT) di pusat (x, z), diperbesar grow mm."""
+    return rbox_xz(x, z, POC_X + grow, POC_Z + grow, y0, y1, min(r, (POC_Z + grow) / 2 - 0.1), TILT)
 
 
 # ============================================================== WADAH (pemegang blister)
@@ -137,7 +150,7 @@ def wadah_belakang(cb):
     for c in range(1, NC + 1):
         for r in range(1, NR + 1):
             x, z = pocket_xz(c, r, cb)
-            cut.append(rbox_xz(x, z, POC_X + 1.0, POC_Z + 1.0, BP_Y[0] - 0.01, BP_Y[1] + 1))
+            cut.append(pocket(x, z, 1.0, BP_Y[0] - 0.01, BP_Y[1] + 1))
     cut.append(rbox_xz(XC, cb + CAR_H - 8, 40, 9, CAR_Y[0] - 1, CAR_Y[1] + 1, 4.4))          # pegangan
     for z in (cb + 25, cb + CAR_H / 2, cb + CAR_H - 30):
         for x in (x0 + 3, x1 - 3):
@@ -147,12 +160,12 @@ def wadah_belakang(cb):
 
 def wadah_depan(cb):
     x0, x1 = CAR_X[0] + 6.2, CAR_X[1] - 6.2
-    m = box(x0 - 6.2, x1 + 6.2, *FR_Y, cb + CAR_BOT, cb + CAR_H - CAR_TOP)
+    m = box(x0 - 6.2, x1 + 6.2, *FR_Y, cb + CAR_BOT + 2.0, cb + CAR_H - CAR_TOP - 2.0)   # 176 mm: muat bed 180
     cut = []
     for c in range(1, NC + 1):
         for r in range(1, NR + 1):
             x, z = pocket_xz(c, r, cb)
-            cut.append(rbox_xz(x, z, POC_X + 1.5, POC_Z + 1.5, FR_Y[0] - 1, FR_Y[1] + 1))
+            cut.append(pocket(x, z, 1.5, FR_Y[0] - 1, FR_Y[1] + 1))
     for z in (cb + 25, cb + CAR_H / 2, cb + CAR_H - 30):
         for x in (CAR_X[0] + 3, CAR_X[1] - 3):
             cut.append(cyl_y(x, z, FR_Y[0] - 1, FR_Y[1] + 1, 1.2, 16))
@@ -167,7 +180,7 @@ def blister_parts(cb, popped=()):
     for c in range(1, NC + 1):
         for r in range(1, NR + 1):
             x, z = pocket_xz(c, r, cb)
-            domes.append(((c, r), rbox_xz(x, z, POC_X, POC_Z, DOME_TIP, BASE_Y[0] + 0.01, 4.5)))
+            domes.append(((c, r), pocket(x, z, 0.0, DOME_TIP, BASE_Y[0] + 0.01)))
             caps.append(((c, r), caplet().translate([x, BASE_Y[0] - T / 2 - 0.3, z])))
     return base, domes, caps
 
@@ -177,7 +190,7 @@ def caplet():
     r = CAP_W / 2
     a = cyl_y(-(CAP_L / 2 - r), 0, -T / 2, T / 2, r, 32)
     b = cyl_y(CAP_L / 2 - r, 0, -T / 2, T / 2, r, 32)
-    return (a + b).hull()
+    return (a + b).hull().rotate([0, -TILT, 0])           # Ry(-a): sumbu +x naik ke +z, sama dengan pocket()
 
 
 # ============================================================== RANGKA
@@ -203,20 +216,25 @@ def part_pemandu_kanan():
 
 
 def part_landasan():
-    """Landasan di belakang wadah (menahan dorongan) + celah keluar kaplet."""
+    """Landasan di belakang wadah: pelat penahan dorongan dengan 4 celah miring (TILT) di baris aktif.
+    Kaplet menembus foil lewat celah, lalu jatuh di ruang antara pelat dan dinding belakang."""
     x0, x1 = CAR_X[0] + 6, CAR_X[1] - 6
     y0 = CAR_Y[1] + 0.3
-    up = box(x0, x1, y0, y0 + 5.2, Z_P + 6.5, Z_P + 11)
-    low = box(x0, x1, y0, y0 + 1.6, Z_P - 14, Z_P - 6.5)          # batang bawah tipis: kaplet jatuh di belakangnya
-    ps = [up, low, box(x0, x0 + 4, y0, D - 0.3, Z_P - 22, Z_P + 14), box(x1 - 4, x1, y0, D - 0.3, Z_P - 22, Z_P + 14),
-          box(x0, x1, D - 2.3, D - 0.3, Z_P + 6.5, Z_P + 14), box(x0, x1, D - 2.3, D - 0.3, Z_P - 22, Z_P - 16)]
-    for xr in (XC - PX, XC, XC + PX):
-        ps.append(box(xr - 1, xr + 1, y0, D - 0.3, Z_P + 6.5, Z_P + 11))
-        ps.append(prism_xz([(xr - 1, Z_P - 22), (xr + 1, Z_P - 22), (xr + 1, Z_P - 16), (xr - 1, Z_P - 16)], y0, D - 0.3))
-        ps.append(box(xr - 1, xr + 1, y0, y0 + 1.6, Z_P - 16, Z_P - 6.5))
+    hz = (POC_X + 2.5 + POC_Z + 2.5) * math.sin(math.radians(TILT)) / 2 + 2.5    # setengah tinggi celah + tepi
+    plate = box(x0, x1, y0, y0 + 2.4, Z_P - hz, Z_P + hz)
+    ps = [plate,
+          box(x0, x1, y0, D - 0.3, Z_P + hz, Z_P + hz + 3.5),                      # balok atas (ke dinding belakang)
+          box(x0, x0 + 4, y0, D - 0.3, Z_P - hz - 8, Z_P + hz + 3.5),              # tiang kiri
+          box(x1 - 4, x1, y0, D - 0.3, Z_P - hz - 8, Z_P + hz + 3.5),              # tiang kanan
+          box(x0, x0 + 4, D - 2.3, D - 0.3, Z_P - hz - 8, Z_P + hz + 3.5),
+          box(x0, x1, D - 2.3, D - 0.3, Z_P - hz - 8, Z_P - hz - 3)]               # palang bawah belakang
+    for i in range(NC - 1):                                                       # sirip penguat di antara celah (miring)
+        xr = XC + (i - (NC - 2) / 2) * PX
+        ps.append(rbox_xz(xr, Z_P + hz + 1.75, 2.0, 3.5, y0, D - 0.3, 0.5))
     m = union(ps)
-    pts = [(x0 + 2, Z_P + 10), (x1 - 2, Z_P + 10), (x0 + 2, Z_P - 19), (x1 - 2, Z_P - 19)]
-    return m - union(holes_y(pts, 10, front=False))
+    cut = [pocket(XC + (c - (NC + 1) / 2) * PX, Z_P, 2.5, y0 - 1, y0 + 3.5) for c in range(1, NC + 1)]
+    pts = [(x0 + 2, Z_P + hz + 1.75), (x1 - 2, Z_P + hz + 1.75), (x0 + 2, Z_P - hz - 5.5), (x1 - 2, Z_P - hz - 5.5)]
+    return m - union(cut + holes_y(pts, 10, front=False))
 
 
 def part_rel():
@@ -338,7 +356,7 @@ def part_spacer_g2():
 def kereta(xs):
     """Kereta pelatuk di posisi x poros servo 3 = xs."""
     zc = Z_P
-    ps = [box(xs - 16.6, xs - 14.6, 0.5, 18.4, 118.0, RAIL_Z[0] - 0.4),                    # pelat samping
+    ps = [box(xs - 16.6, xs - 14.6, 0.5, 18.4, 118.0 + DZ, RAIL_Z[0] - 0.4),                    # pelat samping
           box(xs - 16.6, xs + 14.6, 0.6, 13.4, RAIL_Z[1] + 0.4, RAIL_Z[1] + 2.4),            # atap kait
           box(xs - 16.6, xs + 14.6, RAIL_Y[1] + 0.4, 13.4, RAIL_Z[0] - 2, RAIL_Z[1] + 2.4),  # punggung kait
           box(xs - 16.6, xs + 14.6, 6.0, 13.4, RAIL_Z[0] - 2, RAIL_Z[0] - 0.4),              # bibir bawah
@@ -346,12 +364,12 @@ def kereta(xs):
           box(xs + 11.6, xs + 14.6, 0.5, 18.4, zc - 4.5, zc + 6.6),                          # dinding alur kanan
           box(xs - 14.7, xs - 11.6, 0.5, 18.4, zc - 4.5, zc + 6.6),                          # dinding alur kiri
           box(xs - 16.6, xs + 24.0, 0.5, 18.4, Z_S3_CT - SB_H + SB_FL_Z - 2.5, Z_S3_CT - SB_H + SB_FL_Z),
-          box(xs - 16.6, xs + 6.0, 10.2, 13.3, 118.0, 124.0),                                # rok (slot tuas)
-          box(xs - 6.0, xs + 6.0, 10.2, 13.3, 112.0, 124.0)]
+          box(xs - 16.6, xs + 6.0, 10.2, 13.3, 118.0 + DZ, 124.0 + DZ),                                # rok (slot tuas)
+          box(xs - 6.0, xs + 6.0, 10.2, 13.3, 112.0 + DZ, 124.0 + DZ)]
     m = union(ps)
     cut = [box(xs - 11.7, xs + 11.7, 0, 19, zc - 2.4, zc + 2.4),                            # alur palang yoke
            box(xs - 6.3, xs + 17.3, 3.0, 16.0, Z_S3_CT - SB_H, Z_S3_CT),                    # badan servo 3
-           box(xs - 1.8, xs + 1.8, 9.0, 14.0, 113.0, 123.0)]                                # slot pin tuas
+           box(xs - 1.8, xs + 1.8, 9.0, 14.0, 113.0 + DZ, 126.0 + DZ)]   # garpu terbuka ke atas                                # slot pin tuas
     xcb = xs - SB_OFF + SB_L / 2
     cut += [cyl_z(xcb + s * SB_HOLE / 2, Y_S3, Z_S3_CT - SB_H + SB_FL_Z - 4, Z_S3_CT - SB_H + SB_FL_Z + 1, 0.9, 16)
             for s in (-1, 1)]
@@ -364,7 +382,7 @@ def pelatuk(xs, theta_deg=0.0):
     zc = Z_P
     yoke = box(xs - 11.3, xs + 11.3, y0 - 2.7, y0 + 2.7, zc - 2.0, zc + 2.0)
     bar = box(xs - 3.0, xs + 3.0, y0, y0 + PAD_LP - 2, zc - 2.0, zc + 3.5)       # dasar rata z-2 (mudah dicetak)
-    pad = box(xs - 7.0, xs + 7.0, y0 + PAD_LP - 2.5, y0 + PAD_LP, zc - 2.0, zc + 5.0)
+    pad = rbox_xz(xs, zc, CAP_L - 4.0, 7.0, y0 + PAD_LP - 2.5, y0 + PAD_LP, 3.0, TILT)   # miring, sejajar kaplet
     m = union([yoke, bar, pad])
     return m - box(xs - CRANK3 - 1.8, xs + CRANK3 + 1.8, y0 - 1.75, y0 + 1.75, zc - 3, zc + 3)
 
@@ -587,11 +605,68 @@ def auto_orient(t):
     return best[1], best[0]
 
 
+# ---- belah part panjang untuk printer bed 180 mm (Bambu Lab A1 mini): sambungan ekor burung + lem
+BED = 180.0
+SPLIT = {"01_dinding_depan": 125.0, "01_dinding_belakang": 125.0,     # y cetak = z perangkat + 3 (di atas layar, di bawah kamera)
+         "01_dinding_kiri": 100.0, "01_dinding_kanan": 100.0,         # di antara port USB-C/saklar & baut pemandu
+         "19_wadah_belakang": None}                                   # None = di tengah antara baris 3 dan 4
+DT_NECK, DT_HEAD, DT_LEN, DT_FIT, DT_GAP = 6.0, 9.5, 6.0, 0.1, 22.0
+DT_MINI = {"19_wadah_belakang": (3.5, 5.5, 3.5, 9.0)}                 # leher, kepala, panjang, jarak min (sela kantong sempit)
+
+
+def _from_tm(t):
+    from manifold3d import Mesh
+    return Manifold(Mesh(vert_properties=np.asarray(t.vertices, np.float32), tri_verts=np.asarray(t.faces, np.uint32)))
+
+
+def _dovetail(x, yc, z0, z1, d, dim=None):
+    """Tonjolan ekor burung di x (leher di y=yc, kepala ke +y); d = offset (+ longgar, - ketat)."""
+    nk, hd, ln = dim or (DT_NECK, DT_HEAD, DT_LEN)
+    pts = [(x - nk / 2 - d, yc - 1.0), (x + nk / 2 + d, yc - 1.0),
+           (x + hd / 2 + d, yc + ln + d), (x - hd / 2 - d, yc + ln + d)]
+    return Manifold.extrude(CrossSection([pts]), z1 - z0).translate([0, 0, z0])
+
+
+def split_y(t, yc, mini=None):
+    """Belah mesh posisi cetak t (trimesh) di y = yc -> (bawah, atas, jumlah tonjolan)."""
+    dim, gap = (mini[:3], mini[3]) if mini else (None, DT_GAP)
+    hd, ln = (dim or (DT_NECK, DT_HEAD, DT_LEN))[1:]
+    m = _from_tm(t)
+    (x0, y0, z0), (x1, y1, z1) = t.bounds
+    zt = min(1.6, z1 - z0)                                         # lapisan dasar yang harus pejal
+    base = m ^ box(x0 - 1, x1 + 1, y0 - 1, y1 + 1, z0 - 1, z0 + zt)
+    xs, last = [], -1e9
+    for x in np.arange(x0 + hd, x1 - hd, 0.5):
+        if x - last < gap:
+            continue
+        probe = (_dovetail(x, yc, z0, z0 + zt, 1.0, dim) + box(x - hd / 2 - 1, x + hd / 2 + 1, yc - ln - 1, yc, z0, z0 + zt))
+        if (base ^ probe).volume() >= 0.98 * probe.volume():
+            xs.append(x)
+            last = x
+    def cutter(d):
+        c = box(x0 - 1, x1 + 1, y0 - 1, yc + d, z0 - 1, z1 + 1)
+        for x in xs:
+            c = c + _dovetail(x, yc, z0 - 1, z1 + 1, d, dim)
+        return c
+    lo, hi = m ^ cutter(-DT_FIT), m - cutter(DT_FIT)
+    return to_tm(lo), to_tm(hi), len(xs)
+
+
 def save(name, m, rot=None):
     t = to_tm(m)
     if not name.startswith("01_"):                 # dinding: muka luar sudah di bed
         t, _ = auto_orient(t)
     t.apply_translation(-t.bounds[0])
+    if name in SPLIT:
+        yc = SPLIT[name]
+        if yc is None:                                             # wadah belakang: sela antara baris 3 dan 4
+            yc = CAR_BOT + BL_MZ + 3 * PZ
+        lo, hi, n = split_y(t, yc, DT_MINI.get(name))
+        for sfx, part in (("_A_bawah", lo), ("_B_atas", hi)):
+            part.apply_translation(-part.bounds[0])
+            part.export(os.path.join(OUT, "stl", name + sfx + ".stl"))
+        print(f"    belah {name} di y={yc:.1f}: {n} ekor burung")
+        return t
     t.export(os.path.join(OUT, "stl", name + ".stl"))
     return t
 
